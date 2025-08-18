@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OVA: Recurso Educativo Digital (RED)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Verdes y Blancos Institucionales -->
+    <!-- Application Structure Plan: Se diseña un Objeto Virtual de Aprendizaje (OVA) con una disposición de dos columnas. Un menú lateral fijo a la izquierda permite la navegación entre las secciones pedagógicas (Introducción, Objetivos, etc.). El área de contenido principal a la derecha se actualiza dinámicamente con JavaScript para mostrar la sección seleccionada. Esta estructura es ideal para un aprendizaje guiado y organizado, permitiendo al usuario explorar el contenido de forma secuencial o no lineal. -->
+    <!-- Visualization & Content Choices: 1. Navegación -> Menú lateral con estado activo (HTML/JS) y ahora con iconos para mejorar la usabilidad. Justificación: Estructura clásica y efectiva para un OVA. 2. Fundamentos Teóricos -> Contenido textual con tarjetas destacadas con iconos. Justificación: Facilita la lectura y resalta conceptos clave. 3. Actividades Prácticas -> Cuestionario interactivo. Justificación: Fomenta la participación activa. 4. Evaluación -> Quiz de opción múltiple con retroalimentación. Justificación: Permite la autoevaluación del aprendizaje. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar-link {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        .sidebar-link.active, .sidebar-link:hover {
+            background-color: #e6f4ea;
+            color: #166534; /* green-800 */
+            border-left-color: #22c55e; /* green-500 */
+        }
+        .content-pane {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .content-pane.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .quiz-option:hover {
+            background-color: #f0fdf4; /* green-50 */
+        }
+        .quiz-option.selected {
+            background-color: #dcfce7; /* green-100 */
+            border-color: #22c55e; /* green-500 */
+        }
+        .type-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .type-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        
+        /* Estilos para las tarjetas de características */
+        .caracteristica-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .caracteristica-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+        
+        .caracteristica-card:hover::before {
+            left: 100%;
+        }
+        
+        /* Animación de entrada para el modal */
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px) scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .modal-enter {
+            animation: modalSlideIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-lg flex-shrink-0 hidden md:flex md:flex-col">
+            <div class="p-4">
+                <div style="width: 150px; height: 150px;" class="p-2 mx-auto flex items-center justify-center bg-white rounded-full shadow-lg border-2 border-green-500 transition-shadow duration-300 hover:shadow-green-400">
+                    <img src="img/logo.webp" alt="Logo OVA" class="w-5/6 h-5/6 object-contain" loading="lazy">
+                </div>
+            </div>
+            <nav class="mt-6 flex-1">
+                <a href="#" class="sidebar-link active flex items-center py-3 px-6 font-medium text-slate-700" data-target="introduccion"><span class="mr-3 text-xl">🚀</span> Introducción</a>
+                <a href="#" class="sidebar-link flex items-center py-3 px-6 font-medium text-slate-700" data-target="objetivos"><span class="mr-3 text-xl">🎯</span> Objetivos</a>
+                <a href="#" class="sidebar-link flex items-center py-3 px-6 font-medium text-slate-700" data-target="contenido"><span class="mr-3 text-xl">📚</span> Contenido</a>
+                <a href="#" class="sidebar-link flex items-center py-3 px-6 font-medium text-slate-700" data-target="actividades"><span class="mr-3 text-xl">✍️</span> Actividades</a>
+                <a href="#" class="sidebar-link flex items-center py-3 px-6 font-medium text-slate-700" data-target="evaluacion"><span class="mr-3 text-xl">✔️</span> Evaluación</a>
+                <a href="#" class="sidebar-link flex items-center py-3 px-6 font-medium text-slate-700" data-target="recursos"><span class="mr-3 text-xl">📖</span> Recursos</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 sm:p-6 md:p-10 bg-gray-50">
+            <!-- Mobile Header -->
+            <div class="md:hidden mb-6 flex flex-col items-center">
+                <div style="width: 100px; height: 100px;" class="p-2 flex items-center justify-center bg-white rounded-full shadow-lg transition-shadow duration-300 hover:shadow-green-400 mb-2">
+                    <img src="img/logo.webp" alt="Logo OVA" class="w-5/6 h-5/6 object-contain" loading="lazy">
+                </div>
+                <select id="mobile-nav" class="w-full mt-2 p-2 border rounded-md bg-white shadow-sm">
+                    <option value="introduccion">🚀 Introducción</option>
+                    <option value="objetivos">🎯 Objetivos</option>
+                    <option value="contenido">📚 Contenido</option>
+                    <option value="actividades">✍️ Actividades Prácticas</option>
+                    <option value="evaluacion">✔️ Evaluación</option>
+                    <option value="recursos">📖 Recursos</option>
+                </select>
+            </div>
+
+            <!-- Introducción -->
+            <div id="introduccion" class="content-pane active">
+                <h2 class="text-2xl sm:text-3xl font-bold text-green-800 mb-4">Técnicas de redacción clara y concisa</h2>
+                <p class="text-slate-700 leading-relaxed mb-4">
+                    ¿Te ha pasado que tienes una idea genial, pero al escribirla no suena igual de clara? 🤯 Tranquilo, nos pasa a todos. 
+                    Escribir bien no es un talento secreto, es una habilidad que se entrena. 
+                    En esta unidad aprenderás a dar forma a tus palabras para que sean claras, directas y con impacto, eliminando lo que sobra y organizando tus ideas para que lleguen al lector sin confusión.
+                </p>
+                <div class="mt-8 p-4 sm:p-6 bg-green-50 border-l-4 border-green-500 rounded-r-lg">
+                    <p class="text-green-800">
+                        💡 Recuerda: escribir claro es como hablar con tu mejor amigo: sin enredos ni rodeos.
+                        <br>
+                         A través de ejemplos, ejercicios prácticos y recursos interactivos, podrás mejorar tu capacidad de comunicar ideas con claridad, lo cual te servirá no solo en tus estudios, sino también en tu vida diaria y futura vida laboral.
+                    </p>
+                </div>
+            </div>
+            <!-- Fin Introducción -->
+
+            <!-- Objetivos -->
+            <div id="objetivos" class="content-pane">
+                <h2 class="text-2xl sm:text-3xl font-bold text-green-800 mb-6">Objetivos de aprendizaje</h2>
+                <ul class="space-y-4">
+                    <li class="flex items-start p-4 bg-white rounded-lg shadow-sm">
+                        <span class="text-green-700 mr-3 text-2xl">🎯</span>
+                        <span>Identificar las características de un texto claro y conciso, reconociendo los elementos que facilitan la comprensión lectora.</span>
+                    </li>
+                    <li class="flex items-start p-4 bg-white rounded-lg shadow-sm">
+                        <span class="text-green-700 mr-3 text-2xl">🎯</span>
+                        <span>Aplicar técnicas de redacción para eliminar redundancias, muletillas y palabras innecesarias en distintos tipos de textos.</span>
+                    </li>
+                    <li class="flex items-start p-4 bg-white rounded-lg shadow-sm">
+                        <span class="text-green-700 mr-3 text-2xl">🎯</span>
+                        <span>Organizar ideas de manera lógica y coherente, estructurando los textos con una secuencia clara y fluida.</span>
+                    </li>
+                    <li class="flex items-start p-4 bg-white rounded-lg shadow-sm">
+                        <span class="text-green-700 mr-3 text-2xl">🎯</span>
+                        <span>Utilizar adecuadamente la ortografía y los signos de puntuación para reforzar la precisión y claridad del mensaje.</span>
+                    </li>
+                    <li class="flex items-start p-4 bg-white rounded-lg shadow-sm">
+                        <span class="text-green-700 mr-3 text-2xl">🎯</span>
+                        <span>Analizar ejemplos de textos bien y mal redactados para reconocer errores comunes y proponer mejoras.</span>
+                    </li>
+                    <li class="flex items-start p-4 bg-white rounded-lg shadow-sm">
+                        <span class="text-green-700 mr-3 text-2xl">🎯</span>
+                        <span>Producir textos breves y coherentes que comuniquen ideas de forma directa y sin ambigüedades.</span>
+                    </li>
+                </ul>
+            </div>
+            <!-- Fin Objetivos -->
+
+            <!-- Fundamentos Teóricos -->
+            <div id="contenido" class="content-pane">
+                <!-- Acordeón de temas -->
+                <div class="w-full max-w-8xl mx-auto">
+                    <div class="mb-4">
+                        <button type="button" class="w-full flex justify-between items-center p-4 bg-green-100 border border-green-300 rounded-t-lg focus:outline-none font-bold text-green-800 text-lg accordion-btn mb-2" data-target="#panel-ecuaciones">
+                            Redacción clara y concisa<span class="ml-2">➕</span>
+                        </button>
+                    </div>
+                    <div id="panel-ecuaciones" class="accordion-panel hidden bg-white border border-t-0 border-green-300 rounded-b-lg p-4 mb-6">
+                        <!-- CONTENIDO REDACCIÓN CLARA Y CONCISA AQUÍ -->
+                        <div class="space-y-8 text-slate-700 leading-relaxed">
+                            <div>
+                                <p class="mb-4">
+                                    La redacción clara y concisa es un estilo de escritura que busca comunicar ideas de forma sencilla, directa y sin ambigüedades, usando la menor cantidad de palabras posible sin perder el sentido ni la precisión.
+                                </p>
+                            </div>
+                            <div>
+                                <!-- Ventana flotante animada para características del texto -->
+                                <div class="mt-4 mb-6 p-4 bg-white border border-green-300 rounded-lg shadow-sm">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <!-- Característica CLARA -->
+                                        <div class="caracteristica-card bg-gradient-to-br from-yellow-50 to-yellow-100 border-2 border-yellow-300 rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg" onclick="mostrarDetalle('clara')">
+                                            <div class="flex items-center mb-4">
+                                                <div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mr-4">
+                                                    <span class="text-2xl">💡</span>
+                                                </div>
+                                                <h3 class="text-xl font-bold text-yellow-800">Clara</h3>
+                                            </div>
+                                            <p class="text-yellow-700 text-sm">
+                                                El texto es fácil de entender. La información está organizada de manera lógica, con oraciones simples y vocabulario apropiado.
+                                            </p>
+                                            <div class="mt-3 text-yellow-600 text-xs">
+                                                👆 Haz clic para ampliar
+                                            </div>
+                                        </div>
+
+                                        <!-- Característica CONCISA -->
+                                        <div class="caracteristica-card bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-300 rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg" onclick="mostrarDetalle('concisa')">
+                                            <div class="flex items-center mb-4">
+                                                <div class="w-12 h-12 bg-orange-400 rounded-full flex items-center justify-center mr-4">
+                                                    <span class="text-2xl">🎯</span>
+                                                </div>
+                                                <h3 class="text-xl font-bold text-orange-800">Concisa</h3>
+                                            </div>
+                                            <p class="text-orange-700 text-sm">
+                                                El texto evita redundancias, palabras innecesarias y va al punto principal de manera rápida y efectiva.
+                                            </p>
+                                            <div class="mt-3 text-orange-600 text-xs">
+                                                👆 Haz clic para ampliar
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <p class="mb-4">
+                                    Este tipo de redacción es fundamental para mejorar la comunicación, especialmente en documentos profesionales, académicos o cualquier situación donde se necesite transmitir información de forma eficiente y sin confusiones.
+                                </p>
+                                <h3 class="text-xl font-bold text-green-700 mb-2">Características de una redacción clara y concisa</h3>
+                                <p class="mb-4">Una redacción clara y concisa se caracteriza por transmitir ideas de forma directa, comprensible y sin elementos innecesarios.</p>
+                            </div>
+                            
+                            <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
+                                <h3 class="font-bold text-green-800 mb-2">Lenguaje simple y directo</h3>
+                                <!-- Tarjeta interactiva para lenguaje simple -->
+                                <div class="mt-4 mb-6 p-4 bg-white border border-green-300 rounded-lg shadow-sm">
+                                    <div class="caracteristica-card bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300 rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg" onclick="mostrarDetalle('lenguaje-simple')">
+                                        <div class="flex items-center mb-4">
+                                            <div class="w-12 h-12 bg-green-400 rounded-full flex items-center justify-center mr-4">
+                                                <span class="text-2xl">📝</span>
+                                            </div>
+                                            <h4 class="text-xl font-bold text-green-800">Lenguaje simple y directo</h4>
+                                        </div>
+                                        <p class="text-green-700 text-sm">
+                                            Utiliza un estilo de comunicación claro y accesible, evitando tecnicismos innecesarios y frases rebuscadas.
+                                        </p>
+                                        <div class="mt-3 text-green-600 text-xs">
+                                            👆 Haz clic para ampliar
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <blockquote class="italic text-green-700 mb-2">“Se evitan tecnicismos innecesarios o frases rebuscadas y expresiones largas que pueden resumirse.”</blockquote>
+                                <br>
+                            </div>
+                            <div class="bg-teal-50 border-l-4 border-teal-400 p-4 rounded-r-lg">
+                                <h3 class="font-bold text-teal-800 mb-2">Ideas ordenadas</h3>
+                                <!-- Tarjeta interactiva para ideas ordenadas -->
+                                <div class="mt-4 mb-6 p-4 bg-white border border-teal-300 rounded-lg shadow-sm">
+                                    <div class="caracteristica-card bg-gradient-to-br from-teal-50 to-teal-100 border-2 border-teal-300 rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg" onclick="mostrarDetalle('ideas-ordenadas')">
+                                        <div class="flex items-center mb-4">
+                                            <div class="w-12 h-12 bg-teal-400 rounded-full flex items-center justify-center mr-4">
+                                                <span class="text-2xl">📋</span>
+                                            </div>
+                                            <h4 class="text-xl font-bold text-teal-800">Ideas ordenadas</h4>
+                                        </div>
+                                        <p class="text-teal-700 text-sm">
+                                            Cada párrafo desarrolla una sola idea central con coherencia entre oraciones y párrafos.
+                                        </p>
+                                        <div class="mt-3 text-teal-600 text-xs">
+                                            👆 Haz clic para ampliar
+                                        </div>
+                                    </div>
+                                </div>
+                                <p>
+                                    <blockquote class="italic text-teal-800 mb-2">“Cada párrafo desarrolla una sola idea y hay coherencia entre oraciones.”</blockquote>
+                                </p>
+                            </div>
+                            
+                            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                                <h3 class="font-bold text-blue-800 mb-2">Pocas palabras, mucho significado</h3>
+                                <!-- Tarjeta interactiva para pocas palabras -->
+                                <div class="mt-4 mb-6 p-4 bg-white border border-blue-300 rounded-lg shadow-sm">
+                                    <div class="caracteristica-card bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-300 rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg" onclick="mostrarDetalle('pocas-palabras')">
+                                        <div class="flex items-center mb-4">
+                                            <div class="w-12 h-12 bg-blue-400 rounded-full flex items-center justify-center mr-4">
+                                                <span class="text-2xl">💎</span>
+                                            </div>
+                                            <h4 class="text-xl font-bold text-blue-800">Pocas palabras, mucho significado</h4>
+                                        </div>
+                                        <p class="text-blue-700 text-sm">
+                                            Economía del lenguaje: decir lo máximo con lo mínimo, eliminando redundancias y usando verbos activos.
+                                        </p>
+                                        <div class="mt-3 text-blue-600 text-xs">
+                                            👆 Haz clic para ampliar
+                                        </div>
+                                    </div>
+                                </div>
+                                <p>
+                                    <blockquote class="italic text-blue-700 mb-2">"Se elimina lo redundante y se usan verbos activos (en vez de pasivos)."</blockquote>
+                                </p>
+                            </div>
+                            
+                            <div class="bg-purple-50 border-l-4 border-purple-400 p-4 rounded-r-lg">
+                                <h3 class="font-bold text-purple-800 mb-2">Buena puntuación</h3>
+                                <!-- Tarjeta interactiva para buena puntuación -->
+                                <div class="mt-4 mb-6 p-4 bg-white border border-purple-300 rounded-lg shadow-sm">
+                                    <div class="caracteristica-card bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-300 rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg" onclick="mostrarDetalle('buena-puntuacion')">
+                                        <div class="flex items-center mb-4">
+                                            <div class="w-12 h-12 bg-purple-400 rounded-full flex items-center justify-center mr-4">
+                                                <span class="text-2xl">🔤</span>
+                                            </div>
+                                            <h4 class="text-xl font-bold text-purple-800">Buena puntuación</h4>
+                                        </div>
+                                        <p class="text-purple-700 text-sm">
+                                            Uso correcto de signos de puntuación para guiar al lector y evitar ambigüedades en el texto.
+                                        </p>
+                                        <div class="mt-3 text-purple-600 text-xs">
+                                            👆 Haz clic para ampliar
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-orange-50 border-l-4 border-orange-400 p-4 rounded-r-lg">
+                                <h3 class="font-bold text-orange-800 mb-2">Sin ambigüedad</h3>
+                                <!-- Tarjeta interactiva para sin ambigüedad -->
+                                <div class="mt-4 mb-6 p-4 bg-white border border-orange-300 rounded-lg shadow-sm">
+                                    <div class="caracteristica-card bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-300 rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg" onclick="mostrarDetalle('sin-ambiguedad')">
+                                        <div class="flex items-center mb-4">
+                                            <div class="w-12 h-12 bg-orange-400 rounded-full flex items-center justify-center mr-4">
+                                                <span class="text-2xl">🎯</span>
+                                            </div>
+                                            <h4 class="text-xl font-bold text-orange-800">Sin ambigüedad</h4>
+                                        </div>
+                                        <p class="text-orange-700 text-sm">
+                                            Cada frase tiene un único sentido claro y definido, evitando interpretaciones múltiples.
+                                        </p>
+                                        <div class="mt-3 text-orange-600 text-xs">
+                                            👆 Haz clic para ampliar
+                                        </div>
+                                    </div>
+                                </div>
+                                <p>
+                                    <blockquote class="italic text-orange-700 mb-2">"Para evitarla, es necesario elegir palabras precisas, construir oraciones claras y revisar si el contexto es suficiente para eliminar posibles dobles interpretaciones."</blockquote>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                                        
+
+                    
+                    <!-- Nueva sección 2: Tecnicas de redacción -->
+                    <div class="mb-4">
+                        <button type="button" class="w-full flex justify-between items-center p-4 bg-green-100 border border-green-300 rounded-t-lg focus:outline-none font-bold text-green-800 text-lg accordion-btn mb-2" data-target="#panel-consejos">
+                            Técnicas de redacción clara y concisa<span class="ml-2">➕</span>
+                        </button>
+                    </div>
+                    <div id="panel-consejos" class="accordion-panel hidden bg-white border border-t-0 border-green-300 rounded-b-lg p-4 mb-6">
+                        <div class="space-y-8 text-slate-700 leading-relaxed">
+                            <div>
+                                <p class="mb-4">Las técnicas de redacción clara y concisa son estrategias que ayudan a mejorar la comprensión del texto, evitar confusiones y expresar las ideas de manera breve, precisa y directa. </p>
+                            </div>
+                            
+                            <!-- Tarjeta interactiva para técnicas de redacción -->
+                            <div class="mt-4 mb-6 p-4 bg-white border border-green-300 rounded-lg shadow-sm">
+                                <div class="caracteristica-card bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300 rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg" onclick="mostrarDetalle('tecnicas-redaccion')">
+                                    <div class="flex items-center mb-4">
+                                        <div class="w-12 h-12 bg-green-400 rounded-full flex items-center justify-center mr-4">
+                                            <span class="text-2xl">✍️</span>
+                                        </div>
+                                        <h4 class="text-xl font-bold text-green-800">Técnicas de redacción clara y concisa</h4>
+                                    </div>
+                                    <p class="text-green-700 text-sm">
+                                        Estrategias que ayudan a mejorar la comprensión del texto, evitar confusiones y expresar las ideas de manera breve, precisa y directa.
+                                    </p>
+                                    <div class="mt-3 text-green-600 text-xs">
+                                        👆 Haz clic para ampliar
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                                <h3 class="font-bold text-yellow-800 mb-2">Usar oraciones cortas y directas</h3>
+                                <!-- Tarjeta interactiva para oraciones cortas -->
+                                <div class="mt-4 mb-6 p-4 bg-white border border-yellow-300 rounded-lg shadow-sm">
+                                    <div class="caracteristica-card bg-gradient-to-br from-yellow-50 to-yellow-100 border-2 border-yellow-300 rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg" onclick="mostrarDetalle('oraciones-cortas')">
+                                        <div class="flex items-center mb-4">
+                                            <div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mr-4">
+                                                <span class="text-2xl">📝</span>
+                                            </div>
+                                            <h4 class="text-xl font-bold text-yellow-800">Usar oraciones cortas y directas</h4>
+                                        </div>
+                                        <p class="text-yellow-700 text-sm">
+                                            Evita frases largas que mezclen muchas ideas. Usa una oración por cada idea principal.
+                                        </p>
+                                        <div class="mt-3 text-yellow-600 text-xs">
+                                            👆 Haz clic para ampliar
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-teal-50 border-l-4 border-teal-400 p-4 rounded-r-lg">
+                                <h3 class="font-bold text-teal-800 mb-2">Eliminar palabras innecesarias</h3>
+                                <!-- Tarjeta interactiva para eliminar palabras -->
+                                <div class="mt-4 mb-6 p-4 bg-white border border-teal-300 rounded-lg shadow-sm">
+                                    <div class="caracteristica-card bg-gradient-to-br from-teal-50 to-teal-100 border-2 border-teal-300 rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg" onclick="mostrarDetalle('eliminar-palabras')">
+                                        <div class="flex items-center mb-4">
+                                            <div class="w-12 h-12 bg-teal-400 rounded-full flex items-center justify-center mr-4">
+                                                <span class="text-2xl">✂️</span>
+                                            </div>
+                                            <h4 class="text-xl font-bold text-teal-800">Eliminar palabras innecesarias</h4>
+                                        </div>
+                                        <p class="text-teal-700 text-sm">
+                                            Evita palabras que no aporten significado. Elimina repeticiones y redundancias.
+                                        </p>
+                                        <div class="mt-3 text-teal-600 text-xs">
+                                            👆 Haz clic para ampliar
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                                <h3 class="font-bold text-blue-800 mb-2">Elegir palabras precisas</h3>
+                                <!-- Tarjeta interactiva para palabras precisas -->
+                                <div class="mt-4 mb-6 p-4 bg-white border border-blue-300 rounded-lg shadow-sm">
+                                    <div class="caracteristica-card bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-300 rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg" onclick="mostrarDetalle('palabras-precisas')">
+                                        <div class="flex items-center mb-4">
+                                            <div class="w-12 h-12 bg-blue-400 rounded-full flex items-center justify-center mr-4">
+                                                <span class="text-2xl">🎯</span>
+                                            </div>
+                                            <h4 class="text-xl font-bold text-blue-800">Elegir palabras precisas</h4>
+                                        </div>
+                                        <p class="text-blue-700 text-sm">
+                                            Usa palabras que expresen exactamente lo que quieres decir. Evita generalidades y vaguedades.
+                                        </p>
+                                        <div class="mt-3 text-blue-600 text-xs">
+                                            👆 Haz clic para ampliar
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-purple-50 border-l-4 border-purple-400 p-4 rounded-r-lg">
+                                <h3 class="font-bold text-purple-800 mb-2">Ordenar las ideas lógicamente</h3>
+                                <!-- Tarjeta interactiva para ordenar ideas -->
+                                <div class="mt-4 mb-6 p-4 bg-white border border-purple-300 rounded-lg shadow-sm">
+                                    <div class="caracteristica-card bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-300 rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg" onclick="mostrarDetalle('ordenar-ideas')">
+                                        <div class="flex items-center mb-4">
+                                            <div class="w-12 h-12 bg-purple-400 rounded-full flex items-center justify-center mr-4">
+                                                <span class="text-2xl">📋</span>
+                                            </div>
+                                            <h4 class="text-xl font-bold text-purple-800">Ordenar las ideas lógicamente</h4>
+                                        </div>
+                                        <p class="text-purple-700 text-sm">
+                                            Presenta las ideas de forma ordenada y coherente. Usa conectores adecuados para unir conceptos.
+                                        </p>
+                                        <div class="mt-3 text-purple-600 text-xs">
+                                            👆 Haz clic para ampliar
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="bg-orange-50 border-l-4 border-orange-400 p-4 rounded-r-lg">
+                                <h3 class="font-bold text-orange-800 mb-2">Eliminar repeticiones, muletillas y palabras innecesarias</h3>
+                                <!-- Tarjeta interactiva para eliminar repeticiones -->
+                                <div class="mt-4 mb-6 p-4 bg-white border border-orange-300 rounded-lg shadow-sm">
+                                    <div class="caracteristica-card bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-300 rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg" onclick="mostrarDetalle('eliminar-repeticiones')">
+                                        <div class="flex items-center mb-4">
+                                            <div class="w-12 h-12 bg-orange-400 rounded-full flex items-center justify-center mr-4">
+                                                <span class="text-2xl">🔄</span>
+                                            </div>
+                                            <h4 class="text-xl font-bold text-orange-800">Eliminar repeticiones y muletillas</h4>
+                                        </div>
+                                        <p class="text-orange-700 text-sm">
+                                            Evita repetir ideas o palabras cuando no aportan valor. Lee en voz alta para detectar muletillas.
+                                        </p>
+                                        <div class="mt-3 text-orange-600 text-xs">
+                                            👆 Haz clic para ampliar
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Fin Fundamentos Teóricos -->
+
+            <!-- Actividades Prácticas -->
+            <div id="actividades" class="content-pane">
+                <h2 class="text-2xl sm:text-3xl font-bold text-green-800 mb-6">Actividades prácticas</h2>
+                <div class="space-y-8">
+                    <!-- Ejercicio 1 -->
+                    <div class="bg-white border-l-4 border-green-500 rounded-lg shadow-sm p-6">
+                        <h3 class="text-xl font-bold text-green-700 mb-2">Ejercicio 1: Identificación de redundancias</h3>
+                        <p class="mb-4"><span class="font-semibold">En la frase:</span></p>
+                        <p class="mb-4 italic bg-gray-50 p-3 rounded">"En el mundo actual de la tecnología moderna, el uso de dispositivos inteligentes se ha convertido en una práctica cada vez más común que utilizan muchas personas a diario."</p>
+                        <p class="mb-4"><span class="font-semibold">¿Cuál es el grupo de palabras innecesarias o redundantes que debería eliminarse?</span></p>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="ejercicio1" value="a" class="activity-radio">
+                                <span>a) En el mundo actual</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="ejercicio1" value="b" class="activity-radio">
+                                <span>b) de la tecnología moderna </span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="ejercicio1" value="c" class="activity-radio">
+                                <span>c) a diario</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="ejercicio1" value="d" class="activity-radio">
+                                <span>d) que utilizan muchas personas</span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Ejercicio 2 -->
+                    <div class="bg-white border-l-4 border-green-500 rounded-lg shadow-sm p-6">
+                        <h3 class="text-xl font-bold text-green-700 mb-2">Ejercicio 2: Eliminación de ambigüedad</h3>
+                        <p class="mb-4"><span class="font-semibold">En la frase:</span></p>
+                        <p class="mb-4 italic bg-gray-50 p-3 rounded">"Pinté el cuadro de mi hermana."</p>
+                        <p class="mb-4"><span class="font-semibold">¿Cuál sería la mejor forma de reescribirla para evitar ambigüedad?</span></p>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="ejercicio2" value="a" class="activity-radio">
+                                <span>a) Pinté un retrato de mi hermana. </span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="ejercicio2" value="b" class="activity-radio">
+                                <span>b) Pinté el cuadro que le pertenece a mi hermana.</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="ejercicio2" value="c" class="activity-radio">
+                                <span>c) Hice una pintura de un cuadro.</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="ejercicio2" value="d" class="activity-radio">
+                                <span>d) El cuadro que pinté es de mi hermana.</span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Ejercicio 3 -->
+                    <div class="bg-white border-l-4 border-green-500 rounded-lg shadow-sm p-6">
+                        <h3 class="text-xl font-bold text-green-700 mb-2">Ejercicio 3: Claridad en la expresión</h3>
+                        <p class="mb-4"><span class="font-semibold">En la frase:</span></p>
+                        <p class="mb-4 italic bg-gray-50 p-3 rounded">"El perro de mi vecino que ladra mucho se escapó."</p>
+                        <p class="mb-4"><span class="font-semibold">¿Cuál es la reescritura más clara?</span></p>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="ejercicio3" value="a" class="activity-radio">
+                                <span>a) El perro, que ladra mucho, de mi vecino se escapó.</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="ejercicio3" value="b" class="activity-radio">
+                                <span>b) Se escapó el perro de mi vecino que ladra mucho.</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="ejercicio3" value="c" class="activity-radio">
+                                <span>c) El perro de mi vecino, que ladra mucho, se escapó.</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="ejercicio3" value="d" class="activity-radio">
+                                <span>d) Se escapó el perro que ladra mucho del vecino.</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <button id="check-activity-btn" class="mt-6 bg-green-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-700 transition-colors">Verificar Respuestas</button>
+                <div id="activity-result" class="mt-4 font-medium"></div>
+            </div>
+
+            <!-- Evaluación -->
+            <div id="evaluacion" class="content-pane">
+                <h2 class="text-2xl sm:text-3xl font-bold text-green-800 mb-6">Evaluación</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <p class="text-slate-600 mb-6">Comprueba lo que has aprendido. Selecciona la respuesta correcta para cada pregunta.</p>
+                    <div id="quiz-container"></div>
+                    <button id="submit-quiz-btn" class="mt-6 bg-green-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-700 transition-colors">Finalizar Evaluación</button>
+                    <div id="quiz-result" class="mt-4 text-lg font-bold"></div>
+                </div>
+            </div>
+
+            <!-- Recursos -->
+            <div id="recursos" class="content-pane">
+                <h2 class="text-2xl sm:text-3xl font-bold text-green-800 mb-6">Recursos para Profundizar</h2>
+                <p class="text-slate-700 leading-relaxed mb-6">Para ampliar tu conocimiento te recomendamos explorar los siguientes enlaces y documentos:</p>
+                <ul class="space-y-4">
+                    <!-- Recurso 1 -->
+                    <li class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow flex flex-col sm:flex-row sm:items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-green-700">Técnicas de redacción clara y concisa</h3>
+                            <a href="https://www.springer.com/la/authors-editors/tutoriales-de-autores-y-revisores/writinginenglish/concise-writing/12111712?srsltid=AfmBOoqzUcvYm6v3SwUN1STJoOVP9O-kVh6EKoBkk5FXZgtxihO79FfX" target="_blank" class="underline text-slate-700 hover:text-green-700">Ir al recurso</a>
+                        </div>
+                        <div class="mt-4 sm:mt-0 sm:ml-6 flex-shrink-0">
+                            <div class="bg-green-50 border border-green-300 rounded flex items-center justify-center" style="width:2cm;height:2cm;">
+                                <img src="img/qr1.png" alt="Solución ejercicio 1" class="max-w-full max-h-full object-contain" loading="lazy">
+                            </div>
+                        </div>
+                    </li>
+                    <!-- Recurso 2 -->
+                    <li class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow flex flex-col sm:flex-row sm:items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-green-700">Habilidades Sociales</h3>
+                            <a href="https://wordwall.net/es/resource/33160765/habilidades-sociales" target="_blank" class="underline text-slate-700 hover:text-green-700">Ir al recurso</a>
+                        </div>
+                        <div class="mt-4 sm:mt-0 sm:ml-6 flex-shrink-0">
+                            <div class="bg-green-50 border border-green-300 rounded flex items-center justify-center" style="width:2cm;height:2cm;">
+                                <img src="img/qr2.png" alt="Solución ejercicio 1" class="max-w-full max-h-full object-contain" loading="lazy">
+                            </div>
+                        </div>
+                    </li>
+                    <!-- Recurso 3 -->
+                    <li class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow flex flex-col sm:flex-row sm:items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-green-700">Juego Social</h3>
+                            <a href="https://wordwall.net/es/resource/5761344/jugamos-con-habilidades-sociales" target="_blank" class="underline text-slate-700 hover:text-green-700">Ir al recurso</a>
+                        </div>
+                        <div class="mt-4 sm:mt-0 sm:ml-6 flex-shrink-0">
+                            <div class="bg-green-50 border border-green-300 rounded flex items-center justify-center" style="width:2cm;height:2cm;">
+                                <img src="img/qr3.png" alt="Solución ejercicio 1" class="max-w-full max-h-full object-contain" loading="lazy">
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Footer/Credits -->
+            <footer class="mt-12 pt-6 border-t-2 border-slate-200 text-center">
+                <p class="text-slate-600 font-medium">Creado por:</p>
+                <p class="text-green-800 font-bold text-lg">Centro de Innovación en TIC para el apoyo de la Docencia CINTIA</p>
+                <p class="text-slate-500 text-sm">Universidad de Córdoba</p>
+            </footer>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    const contentPanes = document.querySelectorAll('.content-pane');
+    const mobileNav = document.getElementById('mobile-nav');
+
+    function switchPane(targetId) {
+        contentPanes.forEach(pane => {
+            pane.classList.remove('active');
+        });
+        const targetPane = document.getElementById(targetId);
+        if (targetPane) {
+            targetPane.classList.add('active');
+        }
+
+        sidebarLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.dataset.target === targetId) {
+                link.classList.add('active');
+            }
+        });
+        
+        if (mobileNav.value !== targetId) {
+            mobileNav.value = targetId;
+        }
+    }
+
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = e.currentTarget.dataset.target;
+            switchPane(targetId);
+        });
+    });
+
+    mobileNav.addEventListener('change', (e) => {
+        switchPane(e.target.value);
+    });
+
+    // --- Actividad Práctica ---
+    const activityData = [
+        { 
+            question: "Un video tutorial que muestra cómo resolver una ecuación.", 
+            options: ["Interactividad", "Finalidad Educativa", "Reusabilidad"], 
+            answer: "Finalidad Educativa" 
+        },
+        { 
+            question: "Un quiz en línea que da retroalimentación inmediata.", 
+            options: ["Interactividad", "Adaptabilidad", "Formato Digital"], 
+            answer: "Interactividad" 
+        },
+        { 
+            question: "Una simulación de un laboratorio de química que se puede usar en bachillerato y universidad.", 
+            options: ["Reusabilidad", "Accesibilidad", "Intencionalidad Educativa"], 
+            answer: "Reusabilidad" 
+        }
+    ];
+
+    const activityContainer = document.getElementById('activity-container');
+    if (activityContainer) {
+        activityData.forEach((item, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'p-4 border rounded-lg';
+            
+            let optionsHtml = item.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+
+            questionDiv.innerHTML = `
+                <p class="font-medium text-slate-700 mb-2">${index + 1}. ${item.question}</p>
+                <select class="activity-select w-full p-2 border rounded-md bg-white" data-answer="${item.answer}">
+                    <option value="">Selecciona una característica...</option>
+                    ${optionsHtml}
+                </select>
+            `;
+            activityContainer.appendChild(questionDiv);
+        });
+    }
+
+    const checkActivityBtn = document.getElementById('check-activity-btn');
+    if (checkActivityBtn) {
+        checkActivityBtn.addEventListener('click', () => {
+            const selects = document.querySelectorAll('.activity-select');
+            let correctAnswers = 0;
+            selects.forEach(select => {
+                if (select.value === select.dataset.answer) {
+                    correctAnswers++;
+                    select.classList.add('border-green-500');
+                    select.classList.remove('border-red-500');
+                } else {
+                    select.classList.add('border-red-500');
+                    select.classList.remove('border-green-500');
+                }
+            });
+            const resultDiv = document.getElementById('activity-result');
+            resultDiv.textContent = `Obtuviste ${correctAnswers} de ${activityData.length} respuestas correctas.`;
+            resultDiv.className = correctAnswers === activityData.length ? 'mt-4 font-medium text-green-700' : 'mt-4 font-medium text-red-700';
+        });
+    }
+
+    // --- Evaluación Quiz ---
+    const quizData = [
+        {
+            question: "¿Cuál es el objetivo principal de la redacción clara y concisa?",
+            options: ["Usar un vocabulario muy técnico y extenso", "Comunicar ideas de forma sencilla, directa y sin ambigüedades", "Reducir el número de palabras al mínimo, incluso si se pierde sentido", "Seguir siempre un lenguaje formal y académico"],
+            answer: "Comunicar ideas de forma sencilla, directa y sin ambigüedades"
+        },
+        {
+            question: "¿Cuál de las siguientes frases es un ejemplo de eliminación de redundancias?",
+            options: ["En mi opinión personal creo que el celular es una herramienta muy útil", "El sistema operativo de Android es un sistema operativo que se usa en muchos celulares", "El estudiante presentó su trabajo, que fue bien recibido", "El día lunes por la mañana temprano iré a la reunión"],
+            answer: "El estudiante presentó su trabajo, que fue bien recibido"
+        },
+        {
+            question: "Según las técnicas de redacción clara y concisa, ¿qué elemento se debe evitar para mantener un texto preciso?",
+            options: ["Usar conectores como \"además\" o \"sin embargo\"", "Frases largas con varias ideas mezcladas", "Palabras específicas y concretas", "Revisar y editar el texto antes de finalizarlo"],
+            answer: "Frases largas con varias ideas mezcladas"
+        },
+        {
+            question: "¿Cuál es el principal beneficio de una buena puntuación en la redacción?",
+            options: ["Permite que el texto tenga un tono más elegante", "Ayuda a que las oraciones sean más largas", "Evita ambigüedades y facilita la lectura fluida", "Hace que el texto se vea más profesional aunque no se entienda bien"],
+            answer: "Evita ambigüedades y facilita la lectura fluida"
+        },
+        {
+            question: "¿Cuál de las siguientes frases presenta ambigüedad y necesita reescritura?",
+            options: ["María pintó un retrato de su hermana", "Vio al hombre con los binoculares", "El robot limpia, detecta obstáculos y envía alertas automáticamente", "Hoy en día, el internet es una herramienta útil para acceder a información"],
+            answer: "Vio al hombre con los binoculares"
+        }
+    ];
+
+    const quizContainer = document.getElementById('quiz-container');
+    if(quizContainer) {
+        quizData.forEach((q, index) => {
+            const questionEl = document.createElement('div');
+            questionEl.className = 'mb-6';
+            questionEl.innerHTML = `<p class="font-semibold mb-2">${index + 1}. ${q.question}</p>`;
+            
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'space-y-2';
+            
+            q.options.forEach(option => {
+                const optionEl = document.createElement('div');
+                optionEl.className = 'quiz-option p-3 border-2 border-slate-200 rounded-lg cursor-pointer';
+                optionEl.textContent = option;
+                optionEl.addEventListener('click', () => {
+                    questionEl.querySelectorAll('.quiz-option').forEach(el => el.classList.remove('selected'));
+                    optionEl.classList.add('selected');
+                });
+                optionsContainer.appendChild(optionEl);
+            });
+            
+            questionEl.appendChild(optionsContainer);
+            quizContainer.appendChild(questionEl);
+        });
+    }
+
+    const submitQuizBtn = document.getElementById('submit-quiz-btn');
+    if(submitQuizBtn){
+        submitQuizBtn.addEventListener('click', () => {
+            let score = 0;
+            const questions = quizContainer.querySelectorAll('.mb-6');
+            const feedbacks = [
+                'Correcto: El objetivo principal es comunicar ideas de forma sencilla, directa y sin ambigüedades.',
+                'Correcto: Esta frase elimina redundancias y es clara y concisa.',
+                'Correcto: Las frases largas con varias ideas mezcladas dificultan la comprensión.',
+                'Correcto: La buena puntuación evita ambigüedades y facilita la lectura fluida.',
+                'Correcto: Esta frase presenta ambigüedad porque no está claro quién usa los binoculares.'
+            ];
+            const wrongFeedbacks = [
+                'Incorrecto. El objetivo no es usar vocabulario técnico, sino comunicar de forma clara y directa.',
+                'Incorrecto. Busca la frase que elimina redundancias de manera efectiva.',
+                'Incorrecto. Recuerda que las frases largas con varias ideas mezcladas se deben evitar.',
+                'Incorrecto. El beneficio principal de la puntuación es evitar ambigüedades, no solo elegancia.',
+                'Incorrecto. Busca la frase que presenta ambigüedad en su significado.'
+            ];
+            questions.forEach((q, index) => {
+                const selectedOption = q.querySelector('.quiz-option.selected');
+                let feedbackDiv = q.querySelector('.quiz-feedback');
+                if (!feedbackDiv) {
+                    feedbackDiv = document.createElement('div');
+                    feedbackDiv.className = 'quiz-feedback mt-2 text-sm';
+                    q.appendChild(feedbackDiv);
+                }
+                if (selectedOption && selectedOption.textContent === quizData[index].answer) {
+                    score++;
+                    feedbackDiv.innerHTML = `<span class='text-green-700 font-semibold'>✔️ ${feedbacks[index]}</span>`;
+                } else {
+                    feedbackDiv.innerHTML = `<span class='text-red-700 font-semibold'>❌ ${wrongFeedbacks[index]}</span>`;
+                }
+            });
+            const resultEl = document.getElementById('quiz-result');
+            resultEl.textContent = `Tu puntuación es: ${score} de ${quizData.length}.`;
+            if (score / quizData.length >= 0.7) {
+                resultEl.className = 'mt-4 text-lg font-bold text-green-700';
+            } else {
+                resultEl.className = 'mt-4 text-lg font-bold text-red-700';
+            }
+        });
+    }
+});
+</script>
+
+<script>
+    // JS para verificación de actividades
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkBtn = document.getElementById('check-activity-btn');
+        if (checkBtn) {
+            checkBtn.addEventListener('click', function() {
+                const respuestasCorrectas = [
+                    'b', // Ejercicio 1: "de la tecnología moderna"
+                    'a', // Ejercicio 2: "Pinté un retrato de mi hermana."
+                    'c'  // Ejercicio 3: "El perro de mi vecino, que ladra mucho, se escapó."
+                ];
+                
+                let correctas = 0;
+                let feedback = [];
+                
+                // Verificar cada ejercicio
+                respuestasCorrectas.forEach((respuestaCorrecta, idx) => {
+                    const ejercicioNum = idx + 1;
+                    const radioSeleccionado = document.querySelector(`input[name="ejercicio${ejercicioNum}"]:checked`);
+                    
+                    if (radioSeleccionado && radioSeleccionado.value === respuestaCorrecta) {
+                        correctas++;
+                        feedback.push(`Ejercicio ${ejercicioNum}: ✔️ Correcto`);
+                        // Marcar como correcto visualmente
+                        radioSeleccionado.closest('label').classList.add('text-green-700', 'font-semibold');
+                    } else {
+                        feedback.push(`Ejercicio ${ejercicioNum}: ❌ Incorrecto`);
+                        // Marcar como incorrecto visualmente si hay selección
+                        if (radioSeleccionado) {
+                            radioSeleccionado.closest('label').classList.add('text-red-700', 'font-semibold');
+                        }
+                    }
+                });
+                
+                const resultDiv = document.getElementById('activity-result');
+                resultDiv.innerHTML = `<strong>Respuestas correctas: ${correctas} de 3</strong><br>` + feedback.join('<br>');
+                resultDiv.className = correctas === 3 ? 'mt-4 font-medium text-green-700' : 'mt-4 font-medium text-red-700';
+            });
+        }
+    });
+    // JS simple para acordeón
+    document.querySelectorAll('.accordion-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const panel = document.querySelector(this.getAttribute('data-target'));
+            const isOpen = panel.classList.contains('block');
+            document.querySelectorAll('.accordion-panel').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.accordion-panel').forEach(p => p.classList.remove('block'));
+            if (!isOpen) {
+                panel.classList.remove('hidden');
+                panel.classList.add('block');
+            }
+        });
+    });
+
+    // JavaScript para la ventana flotante de características del texto
+    function mostrarDetalle(tipo) {
+        console.log('Función mostrarDetalle llamada con tipo:', tipo);
+        const modal = document.getElementById('modal-overlay');
+        const modalContent = document.getElementById('modal-content');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        
+        console.log('Elementos del modal encontrados:', {
+            modal: modal,
+            modalContent: modalContent,
+            modalTitle: modalTitle,
+            modalBody: modalBody
+        });
+        
+        let contenido = '';
+        let titulo = '';
+        let colorClase = '';
+        
+        if (tipo === 'clara') {
+            titulo = '💡 Característica: Clara';
+            colorClase = 'text-yellow-800';
+            contenido = `
+                <div class="space-y-6">
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-yellow-800 mb-2">¿Qué significa que un texto sea Claro?</h4>
+                        <p class="text-yellow-700">Un texto claro es aquel que se puede entender fácilmente desde la primera lectura, sin necesidad de releer o interpretar.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white border border-yellow-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-yellow-800 mb-2">✅ Elementos de claridad:</h5>
+                            <ul class="text-sm text-yellow-700 space-y-1">
+                                <li>• Vocabulario apropiado para el público</li>
+                                <li>• Oraciones simples y directas</li>
+                                <li>• Información organizada lógicamente</li>
+                                <li>• Estructura coherente</li>
+                                <li>• Sin ambigüedades</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-white border border-yellow-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-yellow-800 mb-2">❌ Evitar:</h5>
+                            <ul class="text-sm text-yellow-700 space-y-1">
+                                <li>• Tecnicismos innecesarios</li>
+                                <li>• Frases rebuscadas</li>
+                                <li>• Información desordenada</li>
+                                <li>• Oraciones muy largas</li>
+                                <li>• Vocabulario inapropiado</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-yellow-100 to-yellow-200 p-4 rounded-lg">
+                        <h5 class="font-bold text-yellow-800 mb-2">📝 Ejemplo práctico:</h5>
+                        <div class="space-y-2">
+                            <p class="text-sm"><strong>❌ Confuso:</strong> "La implementación de metodologías pedagógicas innovadoras en el contexto educativo contemporáneo..."</p>
+                            <p class="text-sm"><strong>✅ Claro:</strong> "Los nuevos métodos de enseñanza mejoran el aprendizaje de los estudiantes."</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (tipo === 'concisa') {
+            titulo = '🎯 Característica: Concisa';
+            colorClase = 'text-orange-800';
+            contenido = `
+                <div class="space-y-6">
+                    <div class="bg-orange-50 border-l-4 border-orange-400 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-orange-800 mb-2">¿Qué significa que un texto sea Conciso?</h4>
+                        <p class="text-orange-700">Un texto conciso transmite la información necesaria usando la menor cantidad de palabras posible, sin perder significado ni precisión.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white border border-orange-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-orange-800 mb-2">✅ Elementos de concisión:</h5>
+                            <ul class="text-sm text-orange-700 space-y-1">
+                                <li>• Ir directo al punto</li>
+                                <li>• Eliminar redundancias</li>
+                                <li>• Usar verbos activos</li>
+                                <li>• Evitar palabras innecesarias</li>
+                                <li>• Máximo significado, mínimo texto</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-white border border-orange-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-orange-800 mb-2">❌ Evitar:</h5>
+                            <ul class="text-sm text-orange-700 space-y-1">
+                                <li>• Repeticiones innecesarias</li>
+                                <li>• Palabras de relleno</li>
+                                <li>• Verbos pasivos</li>
+                                <li>• Frases largas</li>
+                                <li>• Información irrelevante</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-orange-100 to-orange-200 p-4 rounded-lg">
+                        <h5 class="font-bold text-orange-800 mb-2">📝 Ejemplos de concisión:</h5>
+                        <div class="space-y-2">
+                            <p class="text-sm"><strong>❌ Redundante:</strong> "Subir para arriba" → <strong>✅ Conciso:</strong> "Subir"</p>
+                            <p class="text-sm"><strong>❌ Redundante:</strong> "Hechos reales" → <strong>✅ Conciso:</strong> "Hechos"</p>
+                            <p class="text-sm"><strong>❌ Redundante:</strong> "A pesar del hecho de que..." → <strong>✅ Conciso:</strong> "Aunque"</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (tipo === 'lenguaje-simple') {
+            titulo = '📝 Característica: Lenguaje simple y directo';
+            colorClase = 'text-green-800';
+            contenido = `
+                <div class="space-y-6">
+                    <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-green-800 mb-2">¿Qué es el lenguaje simple y directo?</h4>
+                        <p class="text-green-700">Es un estilo de comunicación que utiliza palabras y estructuras claras, accesibles para cualquier tipo de lector, evitando complicaciones innecesarias.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white border border-green-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-green-800 mb-2">✅ Características:</h5>
+                            <ul class="text-sm text-green-700 space-y-1">
+                                <li>• Vocabulario accesible</li>
+                                <li>• Oraciones cortas y claras</li>
+                                <li>• Sin tecnicismos innecesarios</li>
+                                <li>• Estructura lógica</li>
+                                <li>• Fácil comprensión</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-white border border-green-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-green-800 mb-2">❌ Evitar:</h5>
+                            <ul class="text-sm text-green-700 space-y-1">
+                                <li>• Jerga especializada</li>
+                                <li>• Frases rebuscadas</li>
+                                <li>• Expresiones largas</li>
+                                <li>• Vocabulario complejo</li>
+                                <li>• Estructuras confusas</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-100 to-green-200 p-4 rounded-lg">
+                        <h5 class="font-bold text-green-800 mb-2">📝 Ejemplos prácticos:</h5>
+                        <div class="space-y-2">
+                            <p class="text-sm"><strong>❌ Complejo:</strong> "A pesar del hecho de que..." → <strong>✅ Simple:</strong> "Aunque"</p>
+                            <p class="text-sm"><strong>❌ Complejo:</strong> "Es importante destacar que..." → <strong>✅ Simple:</strong> "Destaca"</p>
+                            <p class="text-sm"><strong>❌ Complejo:</strong> "En virtud de que..." → <strong>✅ Simple:</strong> "Porque"</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (tipo === 'ideas-ordenadas') {
+            titulo = '📋 Característica: Ideas ordenadas';
+            colorClase = 'text-teal-800';
+            contenido = `
+                <div class="space-y-6">
+                    <div class="bg-teal-50 border-l-4 border-teal-400 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-teal-800 mb-2">¿Qué son las ideas ordenadas?</h4>
+                        <p class="text-teal-700">Es la organización lógica del texto donde cada párrafo desarrolla una sola idea central y existe coherencia entre oraciones y párrafos.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white border border-teal-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-teal-800 mb-2">✅ Elementos de orden:</h5>
+                            <ul class="text-sm text-teal-700 space-y-1">
+                                <li>• Una idea por párrafo</li>
+                                <li>• Coherencia interna</li>
+                                <li>• Coherencia externa</li>
+                                <li>• Flujo lógico</li>
+                                <li>• Transiciones claras</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-white border border-teal-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-teal-800 mb-2">❌ Evitar:</h5>
+                            <ul class="text-sm text-teal-700 space-y-1">
+                                <li>• Múltiples ideas mezcladas</li>
+                                <li>• Saltos temáticos</li>
+                                <li>• Falta de conexión</li>
+                                <li>• Desorden lógico</li>
+                                <li>• Párrafos sin estructura</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-teal-100 to-teal-200 p-4 rounded-lg">
+                        <h5 class="font-bold text-teal-800 mb-2">📝 Estructura recomendada:</h5>
+                        <div class="space-y-2">
+                            <p class="text-sm"><strong>✅ Párrafo bien estructurado:</strong></p>
+                            <p class="text-sm">"La puntuación es fundamental en la escritura. Los signos de puntuación guían al lector y evitan confusiones. Sin ellos, el texto sería difícil de entender."</p>
+                            <p class="text-sm"><em>Todas las oraciones giran alrededor de la puntuación.</em></p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (tipo === 'pocas-palabras') {
+            titulo = '💎 Característica: Pocas palabras, mucho significado';
+            colorClase = 'text-blue-800';
+            contenido = `
+                <div class="space-y-6">
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-blue-800 mb-2">¿Qué es la economía del lenguaje?</h4>
+                        <p class="text-blue-700">Es el principio de decir lo máximo con lo mínimo, eliminando todo lo redundante, repetitivo o innecesario para lograr un texto más conciso y potente.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white border border-blue-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-blue-800 mb-2">✅ Técnicas de economía:</h5>
+                            <ul class="text-sm text-blue-700 space-y-1">
+                                <li>• Eliminar redundancias</li>
+                                <li>• Usar verbos activos</li>
+                                <li>• Palabras precisas</li>
+                                <li>• Frases directas</li>
+                                <li>• Sin relleno</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-white border border-blue-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-blue-800 mb-2">❌ Evitar:</h5>
+                            <ul class="text-sm text-blue-700 space-y-1">
+                                <li>• Repeticiones</li>
+                                <li>• Verbos pasivos</li>
+                                <li>• Palabras innecesarias</li>
+                                <li>• Frases largas</li>
+                                <li>• Información irrelevante</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-blue-100 to-blue-200 p-4 rounded-lg">
+                        <h5 class="font-bold text-blue-800 mb-2">📝 Ejemplos de economía:</h5>
+                        <div class="space-y-2">
+                            <p class="text-sm"><strong>❌ Redundante:</strong> "Subir para arriba" → <strong>✅ Económico:</strong> "Subir"</p>
+                            <p class="text-sm"><strong>❌ Redundante:</strong> "Hechos reales" → <strong>✅ Económico:</strong> "Hechos"</p>
+                            <p class="text-sm"><strong>❌ Pasivo:</strong> "Fue realizado por" → <strong>✅ Activo:</strong> "Realizó"</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (tipo === 'buena-puntuacion') {
+            titulo = '🔤 Característica: Buena puntuación';
+            colorClase = 'text-purple-800';
+            contenido = `
+                <div class="space-y-6">
+                    <div class="bg-purple-50 border-l-4 border-purple-400 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-purple-800 mb-2">¿Por qué es importante la puntuación?</h4>
+                        <p class="text-purple-700">Los signos de puntuación guían al lector, indican pausas, énfasis, relaciones sintácticas y evitan ambigüedades en el texto.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white border border-purple-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-purple-800 mb-2">✅ Signos principales:</h5>
+                            <ul class="text-sm text-purple-700 space-y-1">
+                                <li>• <strong>Punto (.)</strong>: Finaliza ideas</li>
+                                <li>• <strong>Coma (,)</strong>: Pausas breves, enumeraciones</li>
+                                <li>• <strong>Punto y coma (;)</strong>: Une oraciones relacionadas</li>
+                                <li>• <strong>Dos puntos (:)</strong>: Introducen explicaciones</li>
+                                <li>• <strong>Guiones (-)</strong>: Separar incisos</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-white border border-purple-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-purple-800 mb-2">❌ Errores comunes:</h5>
+                            <ul class="text-sm text-purple-700 space-y-1">
+                                <li>• Falta de comas en enumeraciones</li>
+                                <li>• Puntos sin espacio después</li>
+                                <li>• Uso incorrecto de punto y coma</li>
+                                <li>• Comas donde van puntos</li>
+                                <li>• Falta de puntuación</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-purple-100 to-purple-200 p-4 rounded-lg">
+                        <h5 class="font-bold text-purple-800 mb-2">📝 Ejemplo de puntuación correcta:</h5>
+                        <div class="space-y-2">
+                            <p class="text-sm"><strong>✅ Bien puntuado:</strong></p>
+                            <p class="text-sm">"La redacción clara requiere: vocabulario simple, oraciones cortas y buena puntuación. Sin embargo, no es fácil; requiere práctica constante."</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (tipo === 'sin-ambiguedad') {
+            titulo = '🎯 Característica: Sin ambigüedad';
+            colorClase = 'text-orange-800';
+            contenido = `
+                <div class="space-y-6">
+                    <div class="bg-orange-50 border-l-4 border-orange-400 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-orange-800 mb-2">¿Qué es la ambigüedad?</h4>
+                        <p class="text-orange-700">Es cuando una expresión puede interpretarse de más de una forma, generando confusión o malentendidos. Un texto sin ambigüedad tiene un único sentido claro.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white border border-orange-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-orange-800 mb-2">✅ Para evitar ambigüedad:</h5>
+                            <ul class="text-sm text-orange-700 space-y-1">
+                                <li>• Palabras precisas</li>
+                                <li>• Oraciones claras</li>
+                                <li>• Contexto suficiente</li>
+                                <li>• Referencias claras</li>
+                                <li>• Estructura lógica</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-white border border-orange-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-orange-800 mb-2">❌ Causas de ambigüedad:</h5>
+                            <ul class="text-sm text-orange-700 space-y-1">
+                                <li>• Pronombres sin referente claro</li>
+                                <li>• Palabras con múltiples sentidos</li>
+                                <li>• Estructura confusa</li>
+                                <li>• Falta de contexto</li>
+                                <li>• Oraciones muy largas</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-orange-100 to-orange-200 p-4 rounded-lg">
+                        <h5 class="font-bold text-orange-800 mb-2">📝 Ejemplo de ambigüedad:</h5>
+                        <div class="space-y-2">
+                            <p class="text-sm"><strong>❌ Ambiguo:</strong> "Vio al hombre con los binoculares."</p>
+                            <p class="text-sm"><em>¿Quién tiene los binoculares? ¿Quién mira a quién?</em></p>
+                            <p class="text-sm"><strong>✅ Claro:</strong> "Ella vio al hombre usando sus binoculares."</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (tipo === 'tecnicas-redaccion') {
+            titulo = '✍️ Técnicas de redacción clara y concisa';
+            colorClase = 'text-slate-800';
+            contenido = `
+                <div class="space-y-8">
+                    <!-- Sección CLARA -->
+                    <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 border-2 border-yellow-300 rounded-xl p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mr-4">
+                                <span class="text-2xl">💡</span>
+                            </div>
+                            <h4 class="text-xl font-bold text-yellow-800">Técnicas para claridad</h4>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-white border border-yellow-200 rounded-lg p-4">
+                                <h5 class="font-semibold text-yellow-800 mb-2">✅ Técnicas principales:</h5>
+                                <ul class="text-sm text-yellow-700 space-y-1">
+                                    <li>• Oraciones cortas y directas</li>
+                                    <li>• Elegir palabras precisas</li>
+                                    <li>• Ordenar ideas lógicamente</li>
+                                    <li>• Buena puntuación</li>
+                                    <li>• Sin ambigüedad</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white border border-yellow-200 rounded-lg p-4">
+                                <h5 class="font-semibold text-yellow-800 mb-2">🎯 Objetivos de claridad:</h5>
+                                <ul class="text-sm text-yellow-700 space-y-1">
+                                    <li>• Fácil comprensión</li>
+                                    <li>• Evitar confusiones</li>
+                                    <li>• Expresar ideas claramente</li>
+                                    <li>• Lectura fluida</li>
+                                    <li>• Sin interpretaciones múltiples</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección CONCISA -->
+                    <div class="bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-300 rounded-xl p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-orange-400 rounded-full flex items-center justify-center mr-4">
+                                <span class="text-2xl">🎯</span>
+                            </div>
+                            <h4 class="text-xl font-bold text-orange-800">Técnicas para concisión</h4>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-white border border-orange-200 rounded-lg p-4">
+                                <h5 class="font-semibold text-orange-800 mb-2">✅ Técnicas de economía:</h5>
+                                <ul class="text-sm text-orange-700 space-y-1">
+                                    <li>• Eliminar palabras innecesarias</li>
+                                    <li>• Eliminar repeticiones</li>
+                                    <li>• Usar verbos activos</li>
+                                    <li>• Ir directo al punto</li>
+                                    <li>• Evitar redundancias</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white border border-orange-200 rounded-lg p-4">
+                                <h5 class="font-semibold text-orange-800 mb-2">🎯 Objetivos de concisión:</h5>
+                                <ul class="text-sm text-orange-700 space-y-1">
+                                    <li>• Máximo significado, mínimo texto</li>
+                                    <li>• Ser directo y efectivo</li>
+                                    <li>• Mantener el interés</li>
+                                    <li>• Lectura más rápida</li>
+                                    <li>• Mayor impacto</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Consejo práctico -->
+                    <div class="bg-gradient-to-r from-slate-100 to-slate-200 p-6 rounded-xl border-2 border-slate-300">
+                        <div class="flex items-center mb-3">
+                            <div class="w-10 h-10 bg-slate-400 rounded-full flex items-center justify-center mr-3">
+                                <span class="text-xl">💡</span>
+                            </div>
+                            <h5 class="font-bold text-slate-800 text-lg">Consejo Práctico</h5>
+                        </div>
+                        <p class="text-slate-700 text-sm leading-relaxed">
+                            <strong>Aplica estas técnicas paso a paso.</strong> No intentes implementar todas de una vez. 
+                            Comienza con una técnica de claridad y una de concisión, domínalas antes de pasar a las siguientes. 
+                            Recuerda: la práctica constante es la clave para mejorar tu redacción.
+                        </p>
+                    </div>
+                </div>
+            `;
+        } else if (tipo === 'oraciones-cortas') {
+            titulo = '📝 Técnica: Usar oraciones cortas y directas';
+            colorClase = 'text-yellow-800';
+            contenido = `
+                <div class="space-y-6">
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-yellow-800 mb-2">¿Por qué usar oraciones cortas?</h4>
+                        <p class="text-yellow-700">Las oraciones cortas son más fáciles de leer y entender. Evitan la confusión que generan las frases largas con múltiples ideas mezcladas.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white border border-yellow-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-yellow-800 mb-2">✅ Beneficios:</h5>
+                            <ul class="text-sm text-yellow-700 space-y-1">
+                                <li>• Fácil comprensión</li>
+                                <li>• Menos confusión</li>
+                                <li>• Lectura fluida</li>
+                                <li>• Ideas claras</li>
+                                <li>• Menos errores</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-white border border-yellow-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-yellow-800 mb-2">❌ Evitar:</h5>
+                            <ul class="text-sm text-yellow-700 space-y-1">
+                                <li>• Frases muy largas</li>
+                                <li>• Múltiples ideas en una oración</li>
+                                <li>• Oraciones complejas</li>
+                                <li>• Subordinadas excesivas</li>
+                                <li>• Párrafos sin pausas</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-yellow-100 to-yellow-200 p-4 rounded-lg">
+                        <h5 class="font-bold text-yellow-800 mb-2">📝 Ejemplo práctico:</h5>
+                        <div class="space-y-2">
+                            <p class="text-sm"><strong>❌ Largo y confuso:</strong></p>
+                            <p class="text-sm">"El uso de computadoras en las escuelas ha aumentado debido a que los estudiantes las necesitan para investigar, escribir trabajos y también para comunicarse con sus profesores."</p>
+                            <p class="text-sm"><strong>✅ Corto y claro:</strong></p>
+                            <p class="text-sm">"Los estudiantes usan computadoras para investigar, escribir y comunicarse con sus profesores."</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (tipo === 'eliminar-palabras') {
+            titulo = '✂️ Técnica: Eliminar palabras innecesarias';
+            colorClase = 'text-teal-800';
+            contenido = `
+                <div class="space-y-6">
+                    <div class="bg-teal-50 border-l-4 border-teal-400 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-teal-800 mb-2">¿Qué palabras eliminar?</h4>
+                        <p class="text-teal-700">Elimina palabras que no aportan significado al texto. Esto incluye repeticiones, redundancias y palabras de relleno que no contribuyen al mensaje principal.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white border border-teal-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-teal-800 mb-2">✅ Tipos de palabras a eliminar:</h5>
+                            <ul class="text-sm text-teal-700 space-y-1">
+                                <li>• Repeticiones innecesarias</li>
+                                <li>• Redundancias</li>
+                                <li>• Palabras de relleno</li>
+                                <li>• Expresiones largas</li>
+                                <li>• Sinónimos repetidos</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-white border border-teal-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-teal-800 mb-2">🎯 Resultado:</h5>
+                            <ul class="text-sm text-teal-700 space-y-1">
+                                <li>• Texto más conciso</li>
+                                <li>• Mensaje más claro</li>
+                                <li>• Lectura más rápida</li>
+                                <li>• Mayor impacto</li>
+                                <li>• Menos confusión</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-teal-100 to-teal-200 p-4 rounded-lg">
+                        <h5 class="font-bold text-teal-800 mb-2">📝 Ejemplo de eliminación:</h5>
+                        <div class="space-y-2">
+                            <p class="text-sm"><strong>❌ Con palabras innecesarias:</strong></p>
+                            <p class="text-sm">"En este momento actual de la situación presente, estamos considerando la posibilidad de implementar una nueva metodología de trabajo."</p>
+                            <p class="text-sm"><strong>✅ Sin palabras innecesarias:</strong></p>
+                            <p class="text-sm">"Estamos considerando implementar una nueva metodología de trabajo."</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (tipo === 'palabras-precisas') {
+            titulo = '🎯 Técnica: Elegir palabras precisas';
+            colorClase = 'text-blue-800';
+            contenido = `
+                <div class="space-y-6">
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-blue-800 mb-2">¿Qué son las palabras precisas?</h4>
+                        <p class="text-blue-700">Son palabras que expresan exactamente lo que quieres decir, evitando generalidades y vaguedades que pueden confundir al lector.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white border border-blue-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-blue-800 mb-2">✅ Palabras precisas:</h5>
+                            <ul class="text-sm text-blue-700 space-y-1">
+                                <li>• Específicas y claras</li>
+                                <li>• Con significado exacto</li>
+                                <li>• Sin ambigüedad</li>
+                                <li>• Apropiadas al contexto</li>
+                                <li>• Fáciles de entender</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-white border border-blue-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-blue-800 mb-2">❌ Evitar generalidades:</h5>
+                            <ul class="text-sm text-blue-700 space-y-1">
+                                <li>• "Cosas", "algo", "varias"</li>
+                                <li>• Palabras vagas</li>
+                                <li>• Términos imprecisos</li>
+                                <li>• Expresiones ambiguas</li>
+                                <li>• Sinónimos confusos</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-blue-100 to-blue-200 p-4 rounded-lg">
+                        <h5 class="font-bold text-blue-800 mb-2">📝 Ejemplo de precisión:</h5>
+                        <div class="space-y-2">
+                            <p class="text-sm"><strong>❌ Vago e impreciso:</strong></p>
+                            <p class="text-sm">"El robot hace muchas cosas automáticamente."</p>
+                            <p class="text-sm"><strong>✅ Específico y preciso:</strong></p>
+                            <p class="text-sm">"El robot limpia, detecta obstáculos y envía alertas automáticamente."</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (tipo === 'ordenar-ideas') {
+            titulo = '📋 Técnica: Ordenar las ideas lógicamente';
+            colorClase = 'text-purple-800';
+            contenido = `
+                <div class="space-y-6">
+                    <div class="bg-purple-50 border-l-4 border-purple-400 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-purple-800 mb-2">¿Cómo ordenar las ideas?</h4>
+                        <p class="text-purple-700">Presenta las ideas de forma ordenada y coherente, usando conectores adecuados para unir conceptos y crear un flujo lógico en el texto.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white border border-purple-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-purple-800 mb-2">✅ Estructura lógica:</h5>
+                            <ul class="text-sm text-purple-700 space-y-1">
+                                <li>• Inicio, desarrollo y cierre</li>
+                                <li>• Ideas relacionadas juntas</li>
+                                <li>• Conectores apropiados</li>
+                                <li>• Progresión natural</li>
+                                <li>• Coherencia entre párrafos</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-white border border-purple-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-purple-800 mb-2">🔗 Conectores útiles:</h5>
+                            <ul class="text-sm text-purple-700 space-y-1">
+                                <li>• "Además", "también"</li>
+                                <li>• "Por eso", "por tanto"</li>
+                                <li>• "Sin embargo", "pero"</li>
+                                <li>• "En primer lugar"</li>
+                                <li>• "Finalmente", "en conclusión"</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-purple-100 to-purple-200 p-4 rounded-lg">
+                        <h5 class="font-bold text-purple-800 mb-2">📝 Ejemplo de orden lógico:</h5>
+                        <div class="space-y-2">
+                            <p class="text-sm"><strong>❌ Sin orden lógico:</strong></p>
+                            <p class="text-sm">"El proyecto es importante. Los costos son altos. Necesitamos más tiempo. Los resultados serán buenos."</p>
+                            <p class="text-sm"><strong>✅ Con orden lógico:</strong></p>
+                            <p class="text-sm">"El proyecto es importante, pero los costos son altos. Por tanto, necesitamos más tiempo para obtener buenos resultados."</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (tipo === 'eliminar-repeticiones') {
+            titulo = '🔄 Técnica: Eliminar repeticiones y muletillas';
+            colorClase = 'text-orange-800';
+            contenido = `
+                <div class="space-y-6">
+                    <div class="bg-orange-50 border-l-4 border-orange-400 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-orange-800 mb-2">¿Qué son las repeticiones y muletillas?</h4>
+                        <p class="text-orange-700">Son palabras o frases que se repiten innecesariamente o que no aportan valor al texto. Incluyen muletillas, redundancias y expresiones repetitivas.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white border border-orange-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-orange-800 mb-2">✅ Tipos de repeticiones:</h5>
+                            <ul class="text-sm text-orange-700 space-y-1">
+                                <li>• Palabras repetidas</li>
+                                <li>• Ideas redundantes</li>
+                                <li>• Muletillas verbales</li>
+                                <li>• Expresiones largas</li>
+                                <li>• Sinónimos innecesarios</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-white border border-orange-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-orange-800 mb-2">🎯 Técnica de detección:</h5>
+                            <ul class="text-sm text-orange-700 space-y-1">
+                                <li>• Leer en voz alta</li>
+                                <li>• Escuchar el texto</li>
+                                <li>• Identificar repeticiones</li>
+                                <li>• Detectar muletillas</li>
+                                <li>• Corregir automáticamente</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-orange-100 to-orange-200 p-4 rounded-lg">
+                        <h5 class="font-bold text-orange-800 mb-2">📝 Ejemplos de eliminación:</h5>
+                        <div class="space-y-2">
+                            <p class="text-sm"><strong>❌ Con repetición:</strong></p>
+                            <p class="text-sm">"El estudiante presentó su trabajo, y el trabajo fue bien recibido."</p>
+                            <p class="text-sm"><strong>✅ Sin repetición:</strong></p>
+                            <p class="text-sm">"El estudiante presentó su trabajo, que fue bien recibido."</p>
+                            <br>
+                            <p class="text-sm"><strong>❌ Palabras innecesarias:</strong></p>
+                            <p class="text-sm">"En mi opinión personal..." → "En mi opinión..."</p>
+                            <p class="text-sm"><strong>✅ Más conciso:</strong></p>
+                            <p class="text-sm">"El día lunes por la mañana temprano..." → "El lunes por la mañana"</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        modalTitle.textContent = titulo;
+        modalTitle.className = `text-2xl font-bold ${colorClase}`;
+        modalBody.innerHTML = contenido;
+        
+        console.log('Contenido del modal configurado:', {
+            titulo: titulo,
+            colorClase: colorClase,
+            contenido: contenido
+        });
+        
+        // Mostrar modal con animación
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        console.log('Modal mostrado, clases actuales:', modal.className);
+        
+        // Animar entrada
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            modalContent.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+    
+    function cerrarModal() {
+        console.log('Función cerrarModal llamada');
+        const modal = document.getElementById('modal-overlay');
+        const modalContent = document.getElementById('modal-content');
+        
+        if (!modal || !modalContent) {
+            console.error('Elementos del modal no encontrados');
+            return;
+        }
+        
+        // Animar salida
+        modalContent.classList.remove('scale-100', 'opacity-100');
+        modalContent.classList.add('scale-95', 'opacity-0');
+        
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            console.log('Modal cerrado completamente');
+        }, 300);
+    }
+    
+    // Funciones para manejar clics en el modal
+    function handleModalOverlayClick(event) {
+        console.log('Clic en modal overlay:', event.target);
+        if (event.target.id === 'modal-overlay') {
+            console.log('Cerrando modal por clic fuera del contenido');
+            cerrarModal();
+        }
+    }
+    
+    function handleModalContentClick(event) {
+        console.log('Clic en contenido del modal:', event.target);
+        // Detener la propagación para evitar que se cierre el modal
+        event.stopPropagation();
+    }
+    
+    // Cerrar modal con tecla Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            console.log('Tecla Escape presionada, cerrando modal');
+            const modal = document.getElementById('modal-overlay');
+            if (modal && !modal.classList.contains('hidden')) {
+                cerrarModal();
+            }
+        }
+    });
+    
+    // Verificar que las tarjetas estén funcionando
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM cargado, verificando tarjetas...');
+        const tarjetas = document.querySelectorAll('.caracteristica-card');
+        console.log('Tarjetas encontradas:', tarjetas.length);
+        
+        tarjetas.forEach((tarjeta, index) => {
+            console.log(`Tarjeta ${index + 1}:`, tarjeta);
+            tarjeta.addEventListener('click', function(e) {
+                console.log('Clic en tarjeta detectado:', e.target);
+            });
+        });
+    });
+</script>
+
+<!-- Ventana modal global para detalles -->
+<div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4" onclick="handleModalOverlayClick(event)">
+    <div id="modal-content" class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" onclick="handleModalContentClick(event)">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modal-title" class="text-2xl font-bold"></h3>
+                <button onclick="cerrarModal()" class="text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</button>
+            </div>
+            <div id="modal-body" class="space-y-4">
+                <!-- Contenido dinámico aquí -->
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
