@@ -115,6 +115,82 @@
         background: #94a3b8;
         }
 
+        /* Estilos para los juegos interactivos */
+        .caracteristica-item {
+            transition: all 0.3s ease;
+        }
+        
+        .caracteristica-item:hover {
+            transform: scale(1.02);
+        }
+        
+        .caracteristica-item.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+        
+        .definicion-slot {
+            transition: all 0.3s ease;
+        }
+        
+        .definicion-slot.drag-over {
+            border-color: #22c55e;
+            background-color: #dcfce7;
+            transform: scale(1.02);
+        }
+        
+        .definicion-slot.correct {
+            border-color: #22c55e;
+            background-color: #dcfce7;
+        }
+        
+        .definicion-slot.incorrect {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+        }
+        
+        .word-item {
+            transition: all 0.3s ease;
+        }
+        
+        .word-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .word-item.dragging {
+            opacity: 0.5;
+            transform: rotate(3deg);
+        }
+        
+        .word-item.used {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        
+        #sentence-builder {
+            transition: all 0.3s ease;
+        }
+        
+        #sentence-builder.drag-over {
+            border-color: #3b82f6;
+            background-color: #dbeafe;
+        }
+        
+        .built-word {
+            display: inline-block;
+            background: white;
+            border: 2px solid #3b82f6;
+            padding: 4px 8px;
+            margin: 2px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .built-word:hover {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+        }
+
 
     </style>
 </head>
@@ -537,85 +613,117 @@
             <!-- Actividades Prácticas -->
             <div id="actividades" class="content-pane">
                 <h2 class="text-2xl sm:text-3xl font-bold text-green-800 mb-6">Actividades prácticas</h2>
-                <div class="space-y-8">
-                    <!-- Ejercicio 1 -->
-                    <div class="bg-white border-l-4 border-green-500 rounded-lg shadow-sm p-6">
-                        <h3 class="text-xl font-bold text-green-700 mb-2">Ejercicio 1: Identificación de redundancias</h3>
-                        <p class="mb-4"><span class="font-semibold">En la frase:</span></p>
-                        <p class="mb-4 italic bg-gray-50 p-3 rounded">"En el mundo actual de la tecnología moderna, el uso de dispositivos inteligentes se ha convertido en una práctica cada vez más común que utilizan muchas personas a diario."</p>
-                        <p class="mb-4"><span class="font-semibold">¿Cuál es el grupo de palabras innecesarias o redundantes que debería eliminarse?</span></p>
-                        <div class="space-y-2">
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="ejercicio1" value="a" class="activity-radio">
-                                <span>a) En el mundo actual</span>
-                            </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="ejercicio1" value="b" class="activity-radio">
-                                <span>b) de la tecnología moderna </span>
-                            </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="ejercicio1" value="c" class="activity-radio">
-                                <span>c) a diario</span>
-                            </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="ejercicio1" value="d" class="activity-radio">
-                                <span>d) que utilizan muchas personas</span>
-                            </label>
+                
+                <!-- Juego 1: Emparejamiento de Características -->
+                <div class="bg-white border-l-4 border-green-500 rounded-lg shadow-sm p-6 mb-8">
+                    <h3 class="text-xl font-bold text-green-700 mb-4">🎮 Juego 1: Empareja las Características</h3>
+                    <p class="text-slate-600 mb-6">Arrastra cada característica a su definición correcta. ¡Demuestra que conoces los elementos de la redacción clara y concisa!</p>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                        <!-- Características (lado izquierdo) -->
+                        <div class="space-y-4">
+                            <h4 class="font-semibold text-green-800 mb-3">📝 Características:</h4>
+                            <div id="caracteristicas-container" class="space-y-3">
+                                <div class="caracteristica-item bg-gradient-to-r from-yellow-100 to-yellow-200 p-4 rounded-lg border-2 border-yellow-300 cursor-move shadow-sm hover:shadow-md transition-all" draggable="true" data-id="clara">
+                                    <div class="flex items-center">
+                                        <span class="text-2xl mr-3">💡</span>
+                                        <span class="font-semibold text-yellow-800">Clara</span>
+                                    </div>
+                                </div>
+                                <div class="caracteristica-item bg-gradient-to-r from-orange-100 to-orange-200 p-4 rounded-lg border-2 border-orange-300 cursor-move shadow-sm hover:shadow-md transition-all" draggable="true" data-id="concisa">
+                                    <div class="flex items-center">
+                                        <span class="text-2xl mr-3">🎯</span>
+                                        <span class="font-semibold text-orange-800">Concisa</span>
+                                    </div>
+                                </div>
+                                <div class="caracteristica-item bg-gradient-to-r from-blue-100 to-blue-200 p-4 rounded-lg border-2 border-blue-300 cursor-move shadow-sm hover:shadow-md transition-all" draggable="true" data-id="precisa">
+                                    <div class="flex items-center">
+                                        <span class="text-2xl mr-3">🎯</span>
+                                        <span class="font-semibold text-blue-800">Precisa</span>
+                                    </div>
+                                </div>
+                                <div class="caracteristica-item bg-gradient-to-r from-purple-100 to-purple-200 p-4 rounded-lg border-2 border-purple-300 cursor-move shadow-sm hover:shadow-md transition-all" draggable="true" data-id="ordenada">
+                                    <div class="flex items-center">
+                                        <span class="text-2xl mr-3">📋</span>
+                                        <span class="font-semibold text-purple-800">Ordenada</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Definiciones (lado derecho) -->
+                        <div class="space-y-4">
+                            <h4 class="font-semibold text-green-800 mb-3">📖 Definiciones:</h4>
+                            <div class="space-y-3">
+                                <div class="definicion-slot bg-gray-50 border-2 border-dashed border-gray-300 p-4 rounded-lg min-h-[68px] transition-all" data-id="clara">
+                                    <p class="text-sm text-gray-600">Fácil de entender, con vocabulario apropiado y estructura lógica</p>
+                                </div>
+                                <div class="definicion-slot bg-gray-50 border-2 border-dashed border-gray-300 p-4 rounded-lg min-h-[68px] transition-all" data-id="concisa">
+                                    <p class="text-sm text-gray-600">Evita redundancias y va directo al punto principal</p>
+                                </div>
+                                <div class="definicion-slot bg-gray-50 border-2 border-dashed border-gray-300 p-4 rounded-lg min-h-[68px] transition-all" data-id="precisa">
+                                    <p class="text-sm text-gray-600">Usa palabras exactas que expresan lo que se quiere decir</p>
+                                </div>
+                                <div class="definicion-slot bg-gray-50 border-2 border-dashed border-gray-300 p-4 rounded-lg min-h-[68px] transition-all" data-id="ordenada">
+                                    <p class="text-sm text-gray-600">Cada párrafo desarrolla una idea con coherencia lógica</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <!-- Ejercicio 2 -->
-                    <div class="bg-white border-l-4 border-green-500 rounded-lg shadow-sm p-6">
-                        <h3 class="text-xl font-bold text-green-700 mb-2">Ejercicio 2: Eliminación de ambigüedad</h3>
-                        <p class="mb-4"><span class="font-semibold">En la frase:</span></p>
-                        <p class="mb-4 italic bg-gray-50 p-3 rounded">"Pinté el cuadro de mi hermana."</p>
-                        <p class="mb-4"><span class="font-semibold">¿Cuál sería la mejor forma de reescribirla para evitar ambigüedad?</span></p>
-                        <div class="space-y-2">
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="ejercicio2" value="a" class="activity-radio">
-                                <span>a) Pinté un retrato de mi hermana. </span>
-                            </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="ejercicio2" value="b" class="activity-radio">
-                                <span>b) Pinté el cuadro que le pertenece a mi hermana.</span>
-                            </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="ejercicio2" value="c" class="activity-radio">
-                                <span>c) Hice una pintura de un cuadro.</span>
-                            </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="ejercicio2" value="d" class="activity-radio">
-                                <span>d) El cuadro que pinté es de mi hermana.</span>
-                            </label>
-                        </div>
-                    </div>
-                    <!-- Ejercicio 3 -->
-                    <div class="bg-white border-l-4 border-green-500 rounded-lg shadow-sm p-6">
-                        <h3 class="text-xl font-bold text-green-700 mb-2">Ejercicio 3: Claridad en la expresión</h3>
-                        <p class="mb-4"><span class="font-semibold">En la frase:</span></p>
-                        <p class="mb-4 italic bg-gray-50 p-3 rounded">"El perro de mi vecino que ladra mucho se escapó."</p>
-                        <p class="mb-4"><span class="font-semibold">¿Cuál es la reescritura más clara?</span></p>
-                        <div class="space-y-2">
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="ejercicio3" value="a" class="activity-radio">
-                                <span>a) El perro, que ladra mucho, de mi vecino se escapó.</span>
-                            </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="ejercicio3" value="b" class="activity-radio">
-                                <span>b) Se escapó el perro de mi vecino que ladra mucho.</span>
-                            </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="ejercicio3" value="c" class="activity-radio">
-                                <span>c) El perro de mi vecino, que ladra mucho, se escapó.</span>
-                            </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="ejercicio3" value="d" class="activity-radio">
-                                <span>d) Se escapó el perro que ladra mucho del vecino.</span>
-                            </label>
-                        </div>
+                    
+                    <div class="mt-6 flex justify-between items-center">
+                        <button id="reset-game1-btn" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors">🔄 Reiniciar</button>
+                        <div id="game1-result" class="font-medium"></div>
+                        <button id="check-game1-btn" class="bg-green-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-700 transition-colors">✔️ Verificar</button>
                     </div>
                 </div>
-                <button id="check-activity-btn" class="mt-6 bg-green-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-700 transition-colors">Verificar Respuestas</button>
-                <div id="activity-result" class="mt-4 font-medium"></div>
+
+                <!-- Juego 2: Mejora de Oraciones -->
+                <div class="bg-white border-l-4 border-blue-500 rounded-lg shadow-sm p-6 mb-8">
+                    <h3 class="text-xl font-bold text-blue-700 mb-4">🎮 Juego 2: Mejora las Oraciones</h3>
+                    <p class="text-slate-600 mb-6">Arrastra las mejoras correctas para transformar oraciones confusas en textos claros y concisos.</p>
+                    
+                    <div id="sentence-game-container">
+                        <!-- Oración actual -->
+                        <div class="mb-6">
+                            <h4 class="font-semibold text-blue-800 mb-3">📝 Oración a mejorar:</h4>
+                            <div id="current-sentence" class="bg-red-50 border-2 border-red-300 p-4 rounded-lg">
+                                <p class="text-red-800 font-medium" id="sentence-text">En el mundo actual de hoy en día, es muy importante que tengamos en cuenta el hecho de que la redacción clara es fundamental.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Área de construcción -->
+                        <div class="mb-6">
+                            <h4 class="font-semibold text-blue-800 mb-3">🔧 Construye la oración mejorada:</h4>
+                            <div id="sentence-builder" class="bg-green-50 border-2 border-dashed border-green-300 p-4 rounded-lg min-h-[100px] transition-all">
+                                <p class="text-gray-500 text-center" id="builder-placeholder">Arrastra las palabras aquí para construir la oración mejorada</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Palabras disponibles -->
+                        <div class="mb-6">
+                            <h4 class="font-semibold text-blue-800 mb-3">🔤 Palabras y frases disponibles:</h4>
+                            <div id="word-bank" class="flex flex-wrap gap-3 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                                <span class="word-item bg-white border-2 border-blue-300 px-3 py-2 rounded-lg cursor-move shadow-sm hover:shadow-md transition-all" draggable="true" data-word="La">La</span>
+                                <span class="word-item bg-white border-2 border-blue-300 px-3 py-2 rounded-lg cursor-move shadow-sm hover:shadow-md transition-all" draggable="true" data-word="redacción">redacción</span>
+                                <span class="word-item bg-white border-2 border-blue-300 px-3 py-2 rounded-lg cursor-move shadow-sm hover:shadow-md transition-all" draggable="true" data-word="clara">clara</span>
+                                <span class="word-item bg-white border-2 border-blue-300 px-3 py-2 rounded-lg cursor-move shadow-sm hover:shadow-md transition-all" draggable="true" data-word="es">es</span>
+                                <span class="word-item bg-white border-2 border-blue-300 px-3 py-2 rounded-lg cursor-move shadow-sm hover:shadow-md transition-all" draggable="true" data-word="fundamental">fundamental</span>
+                                <span class="word-item bg-red-200 border-2 border-red-300 px-3 py-2 rounded-lg cursor-move shadow-sm" draggable="true" data-word="En el mundo actual">En el mundo actual</span>
+                                <span class="word-item bg-red-200 border-2 border-red-300 px-3 py-2 rounded-lg cursor-move shadow-sm" draggable="true" data-word="de hoy en día">de hoy en día</span>
+                                <span class="word-item bg-red-200 border-2 border-red-300 px-3 py-2 rounded-lg cursor-move shadow-sm" draggable="true" data-word="el hecho de que">el hecho de que</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mt-2">💡 Tip: Las palabras en rojo son redundantes o innecesarias</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <button id="reset-game2-btn" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors">🔄 Reiniciar</button>
+                        <div id="game2-result" class="font-medium"></div>
+                        <button id="check-game2-btn" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors">✔️ Verificar</button>
+                        <button id="next-sentence-btn" class="bg-purple-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors hidden">➡️ Siguiente</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Evaluación -->
@@ -906,44 +1014,269 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <script>
-    // JS para verificación de actividades
+    // JS para los juegos interactivos
     document.addEventListener('DOMContentLoaded', function() {
-        const checkBtn = document.getElementById('check-activity-btn');
-        if (checkBtn) {
-            checkBtn.addEventListener('click', function() {
-                const respuestasCorrectas = [
-                    'b', // Ejercicio 1: "de la tecnología moderna"
-                    'a', // Ejercicio 2: "Pinté un retrato de mi hermana."
-                    'c'  // Ejercicio 3: "El perro de mi vecino, que ladra mucho, se escapó."
-                ];
+        // ========== JUEGO 1: EMPAREJAMIENTO DE CARACTERÍSTICAS ==========
+        let game1Matches = {};
+        
+        // Guardar definiciones originales
+        const originalDefinitions = {};
+        
+        // Configurar drag and drop para el Juego 1
+        const caracteristicasItems = document.querySelectorAll('.caracteristica-item');
+        const definicionSlots = document.querySelectorAll('.definicion-slot');
+        
+        // Guardar las definiciones originales
+        definicionSlots.forEach(slot => {
+            originalDefinitions[slot.dataset.id] = slot.innerHTML;
+        });
+        
+        caracteristicasItems.forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', e.target.dataset.id);
+                e.target.classList.add('dragging');
+            });
+            
+            item.addEventListener('dragend', (e) => {
+                e.target.classList.remove('dragging');
+            });
+        });
+        
+        definicionSlots.forEach(slot => {
+            slot.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                slot.classList.add('drag-over');
+            });
+            
+            slot.addEventListener('dragleave', () => {
+                slot.classList.remove('drag-over');
+            });
+            
+            slot.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const caracteristicaId = e.dataTransfer.getData('text/plain');
+                const slotId = slot.dataset.id;
                 
-                let correctas = 0;
-                let feedback = [];
+                slot.classList.remove('drag-over');
                 
-                // Verificar cada ejercicio
-                respuestasCorrectas.forEach((respuestaCorrecta, idx) => {
-                    const ejercicioNum = idx + 1;
-                    const radioSeleccionado = document.querySelector(`input[name="ejercicio${ejercicioNum}"]:checked`);
-                    
-                    if (radioSeleccionado && radioSeleccionado.value === respuestaCorrecta) {
-                        correctas++;
-                        feedback.push(`Ejercicio ${ejercicioNum}: ✔️ Correcto`);
-                        // Marcar como correcto visualmente
-                        radioSeleccionado.closest('label').classList.add('text-green-700', 'font-semibold');
-                    } else {
-                        feedback.push(`Ejercicio ${ejercicioNum}: ❌ Incorrecto`);
-                        // Marcar como incorrecto visualmente si hay selección
-                        if (radioSeleccionado) {
-                            radioSeleccionado.closest('label').classList.add('text-red-700', 'font-semibold');
-                        }
+                // Limpiar slot anterior si existe
+                Object.keys(game1Matches).forEach(key => {
+                    if (game1Matches[key] === caracteristicaId) {
+                        delete game1Matches[key];
                     }
                 });
                 
-                const resultDiv = document.getElementById('activity-result');
-                resultDiv.innerHTML = `<strong>Respuestas correctas: ${correctas} de 3</strong><br>` + feedback.join('<br>');
-                resultDiv.className = correctas === 3 ? 'mt-4 font-medium text-green-700' : 'mt-4 font-medium text-red-700';
+                // Agregar nueva coincidencia
+                game1Matches[slotId] = caracteristicaId;
+                
+                // Actualizar visual del slot
+                const caracteristicaElement = document.querySelector(`[data-id="${caracteristicaId}"]`);
+                if (caracteristicaElement) {
+                    slot.innerHTML = caracteristicaElement.outerHTML;
+                    slot.querySelector('.caracteristica-item').classList.remove('cursor-move');
+                    slot.querySelector('.caracteristica-item').setAttribute('draggable', 'false');
+                }
             });
+        });
+        
+        // Verificar Juego 1
+        document.getElementById('check-game1-btn').addEventListener('click', () => {
+            let correctMatches = 0;
+            const totalMatches = 4;
+            
+            definicionSlots.forEach(slot => {
+                const slotId = slot.dataset.id;
+                const matchedId = game1Matches[slotId];
+                
+                if (matchedId === slotId) {
+                    slot.classList.add('correct');
+                    slot.classList.remove('incorrect');
+                    correctMatches++;
+                } else {
+                    slot.classList.add('incorrect');
+                    slot.classList.remove('correct');
+                }
+            });
+            
+            const resultDiv = document.getElementById('game1-result');
+            if (correctMatches === totalMatches) {
+                resultDiv.innerHTML = '🎉 ¡Perfecto! Has emparejado todas las características correctamente.';
+                resultDiv.className = 'font-medium text-green-700';
+            } else {
+                resultDiv.innerHTML = `📊 ${correctMatches} de ${totalMatches} emparejamientos correctos. ¡Sigue intentando!`;
+                resultDiv.className = 'font-medium text-orange-700';
+            }
+        });
+        
+        // Reiniciar Juego 1
+        document.getElementById('reset-game1-btn').addEventListener('click', () => {
+            game1Matches = {};
+            definicionSlots.forEach(slot => {
+                slot.innerHTML = originalDefinitions[slot.dataset.id];
+                slot.classList.remove('correct', 'incorrect');
+            });
+            document.getElementById('game1-result').innerHTML = '';
+        });
+        
+        // ========== JUEGO 2: MEJORA DE ORACIONES ==========
+        let currentSentenceIndex = 0;
+        let builtSentence = [];
+        let sentenceBuilderListenersAdded = false;
+        
+        const sentences = [
+            {
+                original: "En el mundo actual de hoy en día, es muy importante que tengamos en cuenta el hecho de que la redacción clara es fundamental.",
+                correct: ["La", "redacción", "clara", "es", "fundamental"],
+                words: ["La", "redacción", "clara", "es", "fundamental", "En el mundo actual", "de hoy en día", "el hecho de que", "muy importante", "tengamos en cuenta"]
+            },
+            {
+                original: "A pesar del hecho de que el estudiante realizó el trabajo, el mismo no fue entregado a tiempo debido a circunstancias imprevistas.",
+                correct: ["Aunque", "el", "estudiante", "realizó", "el", "trabajo,", "no", "lo", "entregó", "a", "tiempo"],
+                words: ["Aunque", "el", "el", "estudiante", "realizó", "trabajo,", "no", "lo", "entregó", "a", "tiempo", "A pesar del hecho de que", "el mismo", "debido a circunstancias imprevistas"]
+            },
+            {
+                original: "En mi opinión personal, creo que pienso que la tecnología moderna de hoy en día es muy útil y beneficiosa.",
+                correct: ["La", "tecnología", "moderna", "es", "útil", "y", "beneficiosa"],
+                words: ["La", "tecnología", "moderna", "es", "útil", "y", "beneficiosa", "En mi opinión personal", "creo que", "pienso que", "de hoy en día", "muy"]
+            }
+        ];
+        
+        function loadSentence(index) {
+            const sentence = sentences[index];
+            document.getElementById('sentence-text').textContent = sentence.original;
+            
+            // Limpiar banco de palabras
+            const wordBank = document.getElementById('word-bank');
+            wordBank.innerHTML = '';
+            
+            // Agregar palabras al banco
+            sentence.words.forEach(word => {
+                const wordElement = document.createElement('span');
+                wordElement.className = 'word-item bg-white border-2 border-blue-300 px-3 py-2 rounded-lg cursor-move shadow-sm hover:shadow-md transition-all';
+                wordElement.setAttribute('draggable', 'true');
+                wordElement.setAttribute('data-word', word);
+                wordElement.textContent = word;
+                
+                // Marcar palabras redundantes en rojo
+                if (!sentence.correct.includes(word)) {
+                    wordElement.className = 'word-item bg-red-200 border-2 border-red-300 px-3 py-2 rounded-lg cursor-move shadow-sm';
+                }
+                
+                wordBank.appendChild(wordElement);
+            });
+            
+            // Limpiar constructor de oraciones
+            document.getElementById('sentence-builder').innerHTML = '<p class="text-gray-500 text-center" id="builder-placeholder">Arrastra las palabras aquí para construir la oración mejorada</p>';
+            builtSentence = [];
+            
+            // Configurar eventos de drag and drop para palabras
+            setupWordDragAndDrop();
         }
+        
+        function setupWordDragAndDrop() {
+            const wordItems = document.querySelectorAll('.word-item');
+            const sentenceBuilder = document.getElementById('sentence-builder');
+            
+            wordItems.forEach(item => {
+                item.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', e.target.dataset.word);
+                    e.target.classList.add('dragging');
+                });
+                
+                item.addEventListener('dragend', (e) => {
+                    e.target.classList.remove('dragging');
+                });
+            });
+            
+            // Solo agregar eventos al sentence builder una vez
+            if (!sentenceBuilderListenersAdded) {
+                sentenceBuilder.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    sentenceBuilder.classList.add('drag-over');
+                });
+                
+                sentenceBuilder.addEventListener('dragleave', () => {
+                    sentenceBuilder.classList.remove('drag-over');
+                });
+                
+                sentenceBuilder.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const word = e.dataTransfer.getData('text/plain');
+                    sentenceBuilder.classList.remove('drag-over');
+                    
+                    // Agregar palabra a la oración construida
+                    builtSentence.push(word);
+                    updateSentenceBuilder();
+                    
+                    // Marcar palabra como usada
+                    const wordElement = document.querySelector(`[data-word="${word}"]`);
+                    if (wordElement) {
+                        wordElement.classList.add('used');
+                    }
+                });
+                
+                sentenceBuilderListenersAdded = true;
+            }
+        }
+        
+        function updateSentenceBuilder() {
+            const builder = document.getElementById('sentence-builder');
+            if (builtSentence.length === 0) {
+                builder.innerHTML = '<p class="text-gray-500 text-center" id="builder-placeholder">Arrastra las palabras aquí para construir la oración mejorada</p>';
+            } else {
+                builder.innerHTML = builtSentence.map((word, index) => 
+                    `<span class="built-word" onclick="removeWord(${index})">${word}</span>`
+                ).join(' ');
+            }
+        }
+        
+        window.removeWord = function(index) {
+            const removedWord = builtSentence[index];
+            builtSentence.splice(index, 1);
+            updateSentenceBuilder();
+            
+            // Devolver palabra al banco
+            const wordElement = document.querySelector(`[data-word="${removedWord}"]`);
+            if (wordElement) {
+                wordElement.classList.remove('used');
+            }
+        };
+        
+        // Verificar Juego 2
+        document.getElementById('check-game2-btn').addEventListener('click', () => {
+            const currentSentence = sentences[currentSentenceIndex];
+            const userSentence = builtSentence.join(' ').toLowerCase().replace(/[.,]/g, '');
+            const correctSentence = currentSentence.correct.join(' ').toLowerCase().replace(/[.,]/g, '');
+            
+            const resultDiv = document.getElementById('game2-result');
+            
+            if (userSentence === correctSentence) {
+                resultDiv.innerHTML = '🎉 ¡Excelente! Has mejorado la oración correctamente.';
+                resultDiv.className = 'font-medium text-green-700';
+                document.getElementById('next-sentence-btn').classList.remove('hidden');
+            } else {
+                resultDiv.innerHTML = '📝 Intenta de nuevo. Recuerda eliminar redundancias y usar solo palabras necesarias.';
+                resultDiv.className = 'font-medium text-orange-700';
+            }
+        });
+        
+        // Reiniciar Juego 2
+        document.getElementById('reset-game2-btn').addEventListener('click', () => {
+            loadSentence(currentSentenceIndex);
+            document.getElementById('game2-result').innerHTML = '';
+            document.getElementById('next-sentence-btn').classList.add('hidden');
+        });
+        
+        // Siguiente oración
+        document.getElementById('next-sentence-btn').addEventListener('click', () => {
+            currentSentenceIndex = (currentSentenceIndex + 1) % sentences.length;
+            loadSentence(currentSentenceIndex);
+            document.getElementById('game2-result').innerHTML = '';
+            document.getElementById('next-sentence-btn').classList.add('hidden');
+        });
+        
+        // Cargar primera oración
+        loadSentence(0);
     });
     // JS simple para acordeón
     document.querySelectorAll('.accordion-btn').forEach(btn => {
@@ -987,12 +1320,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let colorClase = '';
         
         if (tipo === 'clara') {
-            titulo = '💡 Característica: Clara';
+            titulo = '💡 Característica: clara';
             colorClase = 'text-yellow-800';
             contenido = `
                 <div class="space-y-6">
                     <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
-                        <h4 class="font-bold text-yellow-800 mb-2">¿Qué significa que un texto sea Claro?</h4>
+                        <h4 class="font-bold text-yellow-800 mb-2">¿Qué significa que un texto sea claro?</h4>
                         <p class="text-yellow-700">Un texto claro es aquel que se puede entender fácilmente desde la primera lectura, sin necesidad de releer o interpretar.</p>
                     </div>
                     
@@ -1030,12 +1363,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         } else if (tipo === 'concisa') {
-            titulo = '🎯 Característica: Concisa';
+            titulo = '🎯 Característica: concisa';
             colorClase = 'text-orange-800';
             contenido = `
                 <div class="space-y-6">
                     <div class="bg-orange-50 border-l-4 border-orange-400 p-4 rounded-r-lg">
-                        <h4 class="font-bold text-orange-800 mb-2">¿Qué significa que un texto sea Conciso?</h4>
+                        <h4 class="font-bold text-orange-800 mb-2">¿Qué significa que un texto sea conciso?</h4>
                         <p class="text-orange-700">Un texto conciso transmite la información necesaria usando la menor cantidad de palabras posible, sin perder significado ni precisión.</p>
                     </div>
                     
@@ -1074,7 +1407,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         } else if (tipo === 'lenguaje-simple') {
-            titulo = '📝 Característica: Lenguaje simple y directo';
+            titulo = '📝 Característica: lenguaje simple y directo';
             colorClase = 'text-green-800';
             contenido = `
                 <div class="space-y-6">
@@ -1118,7 +1451,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         } else if (tipo === 'ideas-ordenadas') {
-            titulo = '📋 Característica: Ideas ordenadas';
+            titulo = '📋 Característica: ideas ordenadas';
             colorClase = 'text-teal-800';
             contenido = `
                 <div class="space-y-6">
@@ -1162,7 +1495,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         } else if (tipo === 'pocas-palabras') {
-            titulo = '💎 Característica: Pocas palabras, mucho significado';
+            titulo = '💎 Característica: pocas palabras, mucho significado';
             colorClase = 'text-blue-800';
             contenido = `
                 <div class="space-y-6">
@@ -1206,7 +1539,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         } else if (tipo === 'buena-puntuacion') {
-            titulo = '🔤 Característica: Buena puntuación';
+            titulo = '🔤 Característica: buena puntuación';
             colorClase = 'text-purple-800';
             contenido = `
                 <div class="space-y-6">
@@ -1219,11 +1552,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="bg-white border border-purple-200 rounded-lg p-4">
                             <h5 class="font-semibold text-purple-800 mb-2">✅ Signos principales:</h5>
                             <ul class="text-sm text-purple-700 space-y-1">
-                                <li>• <strong>Punto (.)</strong>: Finaliza ideas</li>
-                                <li>• <strong>Coma (,)</strong>: Pausas breves, enumeraciones</li>
-                                <li>• <strong>Punto y coma (;)</strong>: Une oraciones relacionadas</li>
-                                <li>• <strong>Dos puntos (:)</strong>: Introducen explicaciones</li>
-                                <li>• <strong>Guiones (-)</strong>: Separar incisos</li>
+                                <li>• <strong>Punto (.)</strong>: finaliza ideas</li>
+                                <li>• <strong>Coma (,)</strong>: pausas breves, enumeraciones</li>
+                                <li>• <strong>Punto y coma (;)</strong>: une oraciones relacionadas</li>
+                                <li>• <strong>Dos puntos (:)</strong>: introducen explicaciones</li>
+                                <li>• <strong>Guiones (-)</strong>: separar incisos</li>
                             </ul>
                         </div>
                         
@@ -1249,7 +1582,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         } else if (tipo === 'sin-ambiguedad') {
-            titulo = '🎯 Característica: Sin ambigüedad';
+            titulo = '🎯 Característica: sin ambigüedad';
             colorClase = 'text-orange-800';
             contenido = `
                 <div class="space-y-6">
@@ -1367,7 +1700,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="w-10 h-10 bg-slate-400 rounded-full flex items-center justify-center mr-3">
                                 <span class="text-xl">💡</span>
                             </div>
-                            <h5 class="font-bold text-slate-800 text-lg">Consejo Práctico</h5>
+                            <h5 class="font-bold text-slate-800 text-lg">Consejo práctico</h5>
                         </div>
                         <p class="text-slate-700 text-sm leading-relaxed">
                             <strong>Aplica estas técnicas paso a paso.</strong> No intentes implementar todas de una vez. 
@@ -1378,7 +1711,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         } else if (tipo === 'oraciones-cortas') {
-            titulo = '📝 Técnica: Usar oraciones cortas y directas';
+            titulo = '📝 Técnica: usar oraciones cortas y directas';
             colorClase = 'text-yellow-800';
             contenido = `
                 <div class="space-y-6">
@@ -1423,7 +1756,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         } else if (tipo === 'eliminar-palabras') {
-            titulo = '✂️ Técnica: Eliminar palabras innecesarias';
+            titulo = '✂️ Técnica: eliminar palabras innecesarias';
             colorClase = 'text-teal-800';
             contenido = `
                 <div class="space-y-6">
@@ -1468,7 +1801,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         } else if (tipo === 'palabras-precisas') {
-            titulo = '🎯 Técnica: Elegir palabras precisas';
+            titulo = '🎯 Técnica: elegir palabras precisas';
             colorClase = 'text-blue-800';
             contenido = `
                 <div class="space-y-6">
@@ -1513,7 +1846,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         } else if (tipo === 'ordenar-ideas') {
-            titulo = '📋 Técnica: Ordenar las ideas lógicamente';
+            titulo = '📋 Técnica: ordenar las ideas lógicamente';
             colorClase = 'text-purple-800';
             contenido = `
                 <div class="space-y-6">
@@ -1558,7 +1891,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         } else if (tipo === 'eliminar-repeticiones') {
-            titulo = '🔄 Técnica: Eliminar repeticiones y muletillas';
+            titulo = '🔄 Técnica: eliminar repeticiones y muletillas';
             colorClase = 'text-orange-800';
             contenido = `
                 <div class="space-y-6">
